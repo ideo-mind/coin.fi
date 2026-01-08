@@ -26,10 +26,19 @@ export function Hero() {
     try {
       const res = await fetch(API_URL, { signal });
       if (res.ok) {
-        const json = await res.json();
-        // Handle various response shapes from Google Apps Script
-        const pioneerCount = json.count ?? json.data?.count ?? json.data?.total ?? json.total ?? 0;
-        setCount(Number(pioneerCount));
+        const text = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          // Fallback if the response isn't pure JSON (common with Google Apps Script redirects)
+          console.warn('API returned non-JSON response');
+          return;
+        }
+        const pioneerCount = json?.count ?? json?.data?.count ?? json?.data?.total ?? json?.total ?? 0;
+        if (typeof pioneerCount === 'number' || !isNaN(Number(pioneerCount))) {
+          setCount(Number(pioneerCount));
+        }
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
@@ -61,7 +70,6 @@ export function Hero() {
       });
       toast.success("Welcome pioneer! You're on the list.");
       setEmail('');
-      // Optimistically fetch count again
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
       console.error(err);
@@ -83,14 +91,14 @@ export function Hero() {
             transition={{ duration: 0.8 }}
             className="space-y-10"
           >
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest shadow-glow">
-              <Zap className="w-3.5 h-3.5 fill-primary animate-pulse" />
-              <span>Unlimited Gas Sponsorship</span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest shadow-glow self-start">
+              <Zap className="w-3.5 h-3.5 fill-primary animate-pulse shrink-0" />
+              <span className="leading-none">Unlimited Gas Sponsorship</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[0.95]">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-white">
               Wallet <span className="text-gradient">Zero</span> Gas.
             </h1>
-            <p className="text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
               Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
             </p>
             <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
@@ -102,7 +110,7 @@ export function Hero() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
                 />
-                <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95">
                   {loading ? "..." : "Access"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
@@ -152,7 +160,7 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-[#f38020]/20 flex items-center justify-center shadow-glow shadow-[#f38020]/10 overflow-hidden">
+                <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow shadow-primary/10 overflow-hidden">
                   <img
                     src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
                     alt="Coin Fi App"

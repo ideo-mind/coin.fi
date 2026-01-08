@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, Info } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -34,59 +34,68 @@ export function PricingAndFAQ() {
     <div className="py-24 space-y-32">
       <section id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl font-bold">Simple, Transparent <span className="text-gradient">Pricing</span></h2>
-          <p className="text-muted-foreground">Choose the plan that fits your journey into web3.</p>
+          <h2 className="text-4xl font-black">Simple, Transparent <span className="text-gradient">Pricing</span></h2>
+          <p className="text-muted-foreground font-medium">Choose the plan that fits your journey into web3.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {plans.map((plan) => (
-            <div 
+            <motion.div
               key={plan.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               className={cn(
                 "relative p-8 rounded-3xl border transition-all duration-300",
-                plan.popular ? "border-primary bg-primary/5 shadow-primary/20 shadow-2xl scale-105 z-10" : "border-border bg-card"
+                plan.popular 
+                  ? "border-primary/50 bg-primary/5 shadow-glow-lg scale-105 z-10" 
+                  : "border-zinc-800 bg-zinc-900/40"
               )}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-widest uppercase">
+                <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black tracking-widest uppercase shadow-glow">
                   Most Popular
                 </div>
               )}
               <div className="space-y-6">
                 <div>
                   <h3 className="text-2xl font-bold">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground">{plan.desc}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold tracking-tighter">{plan.price}</span>
-                  {plan.sub && <span className="text-muted-foreground">{plan.sub}</span>}
+                  <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
+                  {plan.sub && <span className="text-muted-foreground font-medium">{plan.sub}</span>}
                 </div>
-                <ul className="space-y-4">
+                <ul className="space-y-4 pt-2">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-3 text-sm">
+                    <li key={f} className="flex items-center gap-3 text-sm font-medium">
                       <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                        <Check className="w-3 h-3" />
+                        <Check className="w-3 h-3" strokeWidth={3} />
                       </div>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full h-12 text-lg" variant={plan.popular ? 'default' : 'outline'}>
-                  {plan.cta}
+                <Button 
+                  className="w-full h-14 text-lg font-bold rounded-2xl transition-transform active:scale-95" 
+                  variant={plan.popular ? 'default' : 'outline'}
+                  asChild
+                >
+                  <a href="#waitlist">{plan.cta}</a>
                 </Button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
       <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <h2 className="text-3xl font-bold text-center">Frequently Asked <span className="text-gradient">Questions</span></h2>
-        <Accordion type="single" collapsible className="w-full">
+        <h2 className="text-3xl sm:text-4xl font-black text-center">Frequently Asked <span className="text-gradient">Questions</span></h2>
+        <Accordion type="single" collapsible className="w-full space-y-4">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`}>
-              <AccordionTrigger className="text-left font-medium hover:text-primary transition-colors">
+            <AccordionItem key={i} value={`item-${i}`} className="border-zinc-800 bg-zinc-900/20 rounded-2xl px-6">
+              <AccordionTrigger className="text-left font-bold text-lg hover:text-primary transition-colors hover:no-underline py-6">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed">
+              <AccordionContent className="text-zinc-400 font-medium leading-relaxed pb-6">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
