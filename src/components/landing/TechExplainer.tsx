@@ -1,112 +1,97 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowRight } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Cpu, Network, Key, ArrowRight } from 'lucide-react';
 export function TechExplainer() {
   const [activeStep, setActiveStep] = useState('bundler');
-  const techData = {
-    bundler: {
-      title: "Proprietary Bundler Fleet",
-      desc: "Our nodes aggregate UserOperations into single on-chain transactions, paying gas for you through our sponsorship engine.",
-      points: ["99.9% Transaction Reliability", "Auto-scaling Capacity", "MEV-Resistant Routing"]
-    },
-    '7702': {
-      title: "ERC-7702 Integration",
-      desc: "Coin Fi uses the latest 7702 standard to allow standard EOA accounts to behave as smart accounts without migrations.",
-      points: ["Native Wallet Compatibility", "Zero-Migration Path", "Trustless Delegation"]
-    },
-    passkeys: {
-      title: "Secure Enclave Signing",
-      desc: "Forget seed phrases. Use your device's Secure Enclave to sign with biometrics for phishing-proof security.",
-      points: ["Multi-device Sync", "Biometric Authentication", "Phishing Resistance"]
-    }
-  };
   return (
-    <section id="tech" className="py-24 bg-[#050505] text-white">
+    <section id="tech" className="py-24 bg-zinc-950 text-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-black">The Tech Behind <span className="text-primary">0 Gas</span></h2>
-          <p className="text-zinc-500 max-w-2xl mx-auto font-medium text-lg">Next-generation account abstraction infrastructure.</p>
+          <h2 className="text-4xl font-bold">The Tech Behind <span className="text-primary">0 Gas</span></h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto">We leverage the latest Ethereum standards to abstract away the complexity of blockchain interactions.</p>
         </div>
-        <Tabs defaultValue="bundler" onValueChange={setActiveStep} className="space-y-16">
+        <Tabs defaultValue="bundler" onValueChange={setActiveStep} className="space-y-12">
           <div className="flex justify-center">
-            <TabsList className="bg-zinc-900/50 border border-zinc-800 p-1.5 h-auto rounded-2xl ring-1 ring-white/5">
-              <TabsTrigger value="bundler" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">Bundler</TabsTrigger>
-              <TabsTrigger value="7702" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">ERC-7702</TabsTrigger>
-              <TabsTrigger value="passkeys" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">Passkeys</TabsTrigger>
+            <TabsList className="bg-zinc-900 border-zinc-800 p-1 h-auto">
+              <TabsTrigger value="bundler" className="px-6 py-3 data-[state=active]:bg-primary">
+                <Cpu className="w-4 h-4 mr-2" /> Bundler (ERC-4337)
+              </TabsTrigger>
+              <TabsTrigger value="7702" className="px-6 py-3 data-[state=active]:bg-primary">
+                <Network className="w-4 h-4 mr-2" /> P2P Relay (ERC-7702)
+              </TabsTrigger>
+              <TabsTrigger value="passkeys" className="px-6 py-3 data-[state=active]:bg-primary">
+                <Key className="w-4 h-4 mr-2" /> Passkeys
+              </TabsTrigger>
             </TabsList>
           </div>
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="min-h-[350px] flex flex-col justify-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[400px]">
+            <div className="space-y-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="space-y-8"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
                 >
-                  <h3 className="text-4xl font-black tracking-tight">{techData[activeStep as keyof typeof techData].title}</h3>
-                  <p className="text-zinc-400 text-xl leading-relaxed font-medium">{techData[activeStep as keyof typeof techData].desc}</p>
-                  <ul className="space-y-4">
-                    {techData[activeStep as keyof typeof techData].points.map((p, i) => (
-                      <li key={i} className="flex items-center gap-3 text-primary font-bold group cursor-default">
-                        <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" /> {p}
-                      </li>
-                    ))}
+                  <h3 className="text-3xl font-bold">
+                    {activeStep === 'bundler' && "Proprietary Bundler Fleet"}
+                    {activeStep === '7702' && "ERC-7702 Next-Gen Relay"}
+                    {activeStep === 'passkeys' && "Hardware-level Security"}
+                  </h3>
+                  <p className="text-zinc-400 text-lg leading-relaxed">
+                    {activeStep === 'bundler' && "Our high-performance bundler nodes pick up your UserOperations and aggregate them into single on-chain transactions, paying the gas on your behalf through our sponsorship engine."}
+                    {activeStep === '7702' && "Coin Fi uses the latest 7702 standard to allow existing EOAs to temporarily behave as smart accounts, enabling gas sponsorship without needing to migrate funds."}
+                    {activeStep === 'passkeys' && "No more seed phrases. We use your device's Secure Enclave to sign transactions with biometrics, providing 10x better security than traditional private keys."}
+                  </p>
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-2 text-primary font-medium">
+                      <ArrowRight className="w-4 h-4" /> 
+                      {activeStep === 'bundler' ? "99.9% Transaction Reliability" : activeStep === '7702' ? "One-click Upgrade" : "Multi-device Sync"}
+                    </li>
+                    <li className="flex items-center gap-2 text-primary font-medium">
+                      <ArrowRight className="w-4 h-4" /> 
+                      {activeStep === 'bundler' ? "Auto-scaling Capacity" : activeStep === '7702' ? "Compatible with MetaMask" : "Cloud Backup (Encrypted)"}
+                    </li>
                   </ul>
                 </motion.div>
               </AnimatePresence>
             </div>
-            <div className="relative aspect-video bg-zinc-950 rounded-[2.5rem] border border-zinc-800/50 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg ring-1 ring-white/5">
-              <svg
-                viewBox="0 0 400 200"
-                className="w-full h-auto will-change-transform"
-                aria-label="Interactive infrastructure diagram"
-                role="img"
-              >
+            <div className="relative h-[300px] flex items-center justify-center">
+              {/* SVG Animation Flow */}
+              <svg width="400" height="200" viewBox="0 0 400 200" className="w-full h-auto">
                 <defs>
-                  <filter id="svgGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
+                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#F38020" stopOpacity="0.2" />
+                    <stop offset="50%" stopColor="#F38020" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#F38020" stopOpacity="0.2" />
+                  </linearGradient>
                 </defs>
-                <path id="pathTop" d="M 40 60 Q 150 60 200 100" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
-                <path id="pathBottom" d="M 40 140 Q 150 140 200 100" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
-                <path id="pathExit" d="M 200 100 H 360" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
-                <circle cx="40" cy="60" r="14" fill="#050505" stroke="#7000ff" strokeWidth="2" filter="url(#svgGlow)" />
-                <circle cx="40" cy="140" r="14" fill="#050505" stroke="#7000ff" strokeWidth="2" filter="url(#svgGlow)" />
-                <motion.rect
-                  x="180" y="80" width="40" height="40" rx="10"
-                  fill="#050505" stroke="#00f2ff" strokeWidth="2"
-                  filter="url(#svgGlow)"
-                  animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                {/* Nodes */}
+                <circle cx="50" cy="100" r="30" fill="#18181b" stroke="#3f3f46" strokeWidth="2" />
+                <rect x="170" y="70" width="60" height="60" rx="8" fill="#18181b" stroke="#F38020" strokeWidth="2" />
+                <circle cx="350" cy="100" r="30" fill="#18181b" stroke="#3f3f46" strokeWidth="2" />
+                {/* Labels */}
+                <text x="50" y="150" textAnchor="middle" fill="#71717a" fontSize="12">App</text>
+                <text x="200" y="150" textAnchor="middle" fill="#F38020" fontSize="12" fontWeight="bold">Bundler</text>
+                <text x="350" y="150" textAnchor="middle" fill="#71717a" fontSize="12">Chain</text>
+                {/* Animated Dot */}
+                <motion.circle 
+                  cx="50" cy="100" r="6" fill="#F38020"
+                  animate={{ 
+                    cx: [50, 200, 350],
+                    opacity: [0, 1, 0]
+                  }}
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                 />
-                <circle cx="360" cy="100" r="18" fill="#050505" stroke="#00f2ff" strokeWidth="3" filter="url(#svgGlow)" />
-                {[0, 1, 2].map((i) => (
-                  <React.Fragment key={i}>
-                    <circle r="3.5" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`}>
-                        <mpath href="#pathTop" />
-                      </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`} />
-                    </circle>
-                    <circle r="3.5" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="4s" repeatCount="indefinite" begin={`${i * 1.4}s`}>
-                        <mpath href="#pathBottom" />
-                      </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4s" repeatCount="indefinite" begin={`${i * 1.4}s`} />
-                    </circle>
-                    <circle r="4.5" fill="#7000ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="2.2s" repeatCount="indefinite" begin={`${i * 0.7}s`}>
-                        <mpath href="#pathExit" />
-                      </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.2s" repeatCount="indefinite" begin={`${i * 0.7}s`} />
-                    </circle>
-                  </React.Fragment>
-                ))}
+                {/* Connecting Lines */}
+                <path d="M 80 100 L 170 100" stroke="#3f3f46" strokeWidth="2" strokeDasharray="4" />
+                <path d="M 230 100 L 320 100" stroke="#3f3f46" strokeWidth="2" strokeDasharray="4" />
               </svg>
             </div>
           </div>

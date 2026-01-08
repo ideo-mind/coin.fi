@@ -1,18 +1,14 @@
 import React from 'react';
-import { Twitter, Github, Linkedin } from 'lucide-react';
+import { Wallet2, Twitter, Github, Linkedin } from 'lucide-react';
 export function Footer() {
   return (
     <footer className="bg-zinc-950 text-white pt-24 pb-12 border-t border-zinc-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#f38020] p-1 rounded-lg shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0">
-                <img 
-                  src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png" 
-                  alt="Coin Fi" 
-                  className="w-6 h-6 object-contain brightness-110"
-                />
+            <div className="flex items-center gap-2">
+              <div className="bg-primary p-1.5 rounded-lg">
+                <Wallet2 className="w-6 h-6 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold tracking-tight">Coin Fi</span>
             </div>
