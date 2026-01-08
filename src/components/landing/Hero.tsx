@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Wallet2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = '/api/waitlist';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxchu6OrPZY5gI232X-y3cpU9NrajkWzDua-18exZINVvMaMd-VA5mD0cpeSKDEPnQQ/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
@@ -16,14 +16,19 @@ export function Hero() {
   const [isCountLoading, setIsCountLoading] = useState(true);
   const fetchCount = async (signal?: AbortSignal) => {
     try {
+      // Use no-cors mode if the external API doesn't support CORS for GET, 
+      // but typically we want the JSON response. GAS usually requires redirects.
       const res = await fetch(API_URL, { signal });
       if (res.ok) {
         const json = await res.json();
-        setCount(json.data?.count ?? 0);
+        // Handle GAS structure: usually { success: true, count: 123 }
+        if (json.success) {
+          setCount(json.count ?? json.data?.count ?? 0);
+        }
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('Failed to fetch count', err);
+        console.warn('Waitlist count fetch failed (might be CORS or URL policy):', err.message);
       }
     } finally {
       setIsCountLoading(false);
@@ -43,17 +48,25 @@ export function Hero() {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('platforms', JSON.stringify(platforms));
-      const res = await fetch(API_URL, { method: 'POST', body: formData });
-      if (res.ok) {
+      // Note: Google Apps Script usually requires 'mode: no-cors' for POST from some environments
+      // but that prevents reading the response. Using standard fetch first.
+      const res = await fetch(API_URL, { 
+        method: 'POST', 
+        body: formData,
+      });
+      // GAS often returns a redirect or opaque response if no-cors is used.
+      // If the res.ok check fails because of CORS but the data actually sends:
+      if (res.ok || res.type === 'opaque') {
         toast.success("Welcome aboard! You're on the list.");
         setEmail('');
         setPlatforms(PLATFORMS);
         fetchCount();
       } else {
-        const errData = await res.json();
-        toast.error(errData.error || "Submission failed");
+        toast.error("Submission failed. Please try again.");
       }
     } catch (err) {
+      // Fallback: If it's a CORS error but it likely reached the script
+      console.error('Waitlist submission error:', err);
       toast.error("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -140,10 +153,10 @@ export function Hero() {
                            <div className="w-full h-full bg-gradient-to-br from-primary/40 to-zinc-700" />
                         </div>
                       ))}
-                      <motion.div 
+                      <motion.div
                         animate={{ opacity: [1, 0, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" 
+                        className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
                       />
                     </div>
                     <span className="text-muted-foreground">
@@ -180,7 +193,7 @@ export function Hero() {
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Gas Fee</span>
                     <motion.div
-                      animate={{ 
+                      animate={{
                         opacity: [1, 0.4, 1],
                         scale: [1, 1.1, 1],
                         backgroundColor: ["rgba(34,197,94,0.1)", "rgba(34,197,94,0.3)", "rgba(34,197,94,0.1)"]
@@ -210,15 +223,14 @@ export function Hero() {
                   </div>
                 </div>
               </div>
-              {/* Decorative Icons with floating animation */}
-              <motion.div 
+              <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -right-6 top-1/4 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl shadow-2xl z-30"
               >
                 <ShieldCheck className="w-7 h-7 text-primary" />
               </motion.div>
-              <motion.div 
+              <motion.div
                 animate={{ y: [0, 15, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 className="absolute -left-10 bottom-1/4 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl shadow-2xl z-30"
@@ -226,7 +238,6 @@ export function Hero() {
                 <Globe className="w-7 h-7 text-primary" />
               </motion.div>
             </motion.div>
-            {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[150px] rounded-full -z-10 animate-pulse" />
           </motion.div>
         </div>

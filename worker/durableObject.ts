@@ -1,5 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
-import type { DemoItem, WaitlistEntry } from '@shared/types';
+import type { DemoItem } from '@shared/types';
 import { MOCK_ITEMS } from '@shared/mock-data';
 export class GlobalDurableObject extends DurableObject {
     async getCounterValue(): Promise<number> {
@@ -45,17 +45,5 @@ export class GlobalDurableObject extends DurableObject {
       const updatedItems = items.filter(item => item.id !== id);
       await this.ctx.storage.put("demo_items", updatedItems);
       return updatedItems;
-    }
-    async addWaitlistEntry(entry: WaitlistEntry): Promise<void> {
-      const entries = (await this.ctx.storage.get<WaitlistEntry[]>("waitlist")) || [];
-      entries.push(entry);
-      await this.ctx.storage.put("waitlist", entries);
-    }
-    async getWaitlistEntries(): Promise<WaitlistEntry[]> {
-      return (await this.ctx.storage.get<WaitlistEntry[]>("waitlist")) || [];
-    }
-    async getWaitlistCount(): Promise<number> {
-      const entries = await this.ctx.storage.get<WaitlistEntry[]>("waitlist");
-      return entries ? entries.length : 0;
     }
 }
