@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Wallet2 } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,11 +22,15 @@ export function Navbar() {
       scrolled ? "bg-background/80 backdrop-blur-md border-border py-3" : "bg-transparent border-transparent py-5"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary p-1.5 rounded-lg">
-            <Wallet2 className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center gap-3">
+          <div className="bg-[#f38020] p-1 rounded-lg shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0">
+            <img 
+              src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png" 
+              alt="Coin Fi" 
+              className="w-8 h-8 object-contain brightness-110"
+            />
           </div>
-          <span className="text-xl font-bold tracking-tight">Coin Fi</span>
+          <span className="text-xl font-bold tracking-tight text-foreground">Coin Fi</span>
         </div>
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">

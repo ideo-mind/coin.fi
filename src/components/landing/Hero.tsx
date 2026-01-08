@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Wallet2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react';
+import { Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = 'https://script.google.com/macros/s/AKfycbxchu6OrPZY5gI232X-y3cpU9NrajkWzDua-18exZINVvMaMd-VA5mD0cpeSKDEPnQQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyI6LIMhfySTUvv0pz-badX7pqtj4xWH-zf_HfmELoQEENCELmZB2kYDYRUysGl4qGh/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
@@ -24,9 +24,9 @@ export function Hero() {
       const res = await fetch(API_URL, { signal });
       if (res.ok) {
         const json = await res.json();
-        if (json.success) {
-          setCount(json.count ?? json.data?.count ?? 0);
-        }
+        // Robust parsing for various response shapes: count, data.count, or data.total
+        const pioneerCount = json.count ?? json.data?.count ?? json.data?.total ?? json.total ?? 0;
+        setCount(Number(pioneerCount));
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
@@ -63,6 +63,9 @@ export function Hero() {
     } finally {
       setLoading(false);
     }
+  };
+  const togglePlatform = (p: string) => {
+    setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
   };
   return (
     <section id="waitlist" ref={ref} className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#050505]">
@@ -101,14 +104,19 @@ export function Hero() {
               <div className="p-5 rounded-3xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm">
                 <div className="grid grid-cols-2 gap-y-4 gap-x-2">
                   {PLATFORMS.map((p) => (
-                    <div key={p} className="flex items-center space-x-3 group cursor-pointer" onClick={() => setEmail(email)}>
+                    <div key={p} className="flex items-center space-x-3 group cursor-pointer" onClick={() => togglePlatform(p)}>
                       <Checkbox
-                        id={`p-${p}`}
+                        id={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
                         checked={platforms.includes(p)}
-                        onCheckedChange={(c) => setPlatforms(prev => c ? [...prev, p] : prev.filter(x => x !== p))}
+                        onCheckedChange={() => togglePlatform(p)}
                         className="data-[state=checked]:bg-primary"
+                        onClick={(e) => e.stopPropagation()}
                       />
-                      <Label htmlFor={`p-${p}`} className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer">
+                      <Label 
+                        htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`} 
+                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {p}
                       </Label>
                     </div>
@@ -119,12 +127,12 @@ export function Hero() {
             {!isCountLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
                 <div className="flex -space-x-2">
-                  {[1,2,3].map(i => (
+                  {[1, 2, 3].map(i => (
                     <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-to-br from-primary to-secondary" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">{count?.toLocaleString() || 0}</strong> pioneers joined
+                  <strong className="text-foreground">{(count ?? 0).toLocaleString()}</strong> pioneers joined
                 </span>
               </motion.div>
             )}
@@ -140,8 +148,12 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow">
-                  <Wallet2 className="w-8 h-8 text-primary" />
+                <div className="h-14 w-14 rounded-2xl bg-[#f38020]/20 flex items-center justify-center shadow-glow shadow-[#f38020]/10 overflow-hidden">
+                  <img 
+                    src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png" 
+                    alt="Coin Fi App" 
+                    className="w-10 h-10 object-contain brightness-110"
+                  />
                 </div>
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">
                   <div className="flex justify-between items-center">
