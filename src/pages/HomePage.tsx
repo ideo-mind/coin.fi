@@ -6,6 +6,7 @@ import { TechExplainer } from '@/components/landing/TechExplainer';
 import { SecurityScan } from '@/components/landing/SecurityScan';
 import { PricingAndFAQ } from '@/components/landing/PricingAndFAQ';
 import { Footer } from '@/components/landing/Footer';
+import { MobileCTA } from '@/components/landing/MobileCTA';
 import { Toaster } from '@/components/ui/sonner';
 export function HomePage() {
   return (
@@ -35,6 +36,8 @@ export function HomePage() {
         </div>
       </main>
       <Footer />
+      {/* Sticky Bottom CTA for Mobile */}
+      <MobileCTA />
       <Toaster position="top-center" richColors />
     </div>
   );

@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Wallet2, Zap, ShieldCheck, Globe, Users, ArrowRight } from 'lucide-react';
+import { Wallet2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 const API_URL = '/api/waitlist';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
-  const [platforms, setPlatforms] = useState<string[]>([]);
+  const [platforms, setPlatforms] = useState<string[]>(PLATFORMS);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [isCountLoading, setIsCountLoading] = useState(true);
@@ -34,10 +34,10 @@ export function Hero() {
     fetchCount(controller.signal);
     return () => controller.abort();
   }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return toast.error("Please enter your email");
+    if (platforms.length === 0) return toast.error("Please select at least one platform");
     setLoading(true);
     try {
       const formData = new FormData();
@@ -47,7 +47,7 @@ export function Hero() {
       if (res.ok) {
         toast.success("Welcome aboard! You're on the list.");
         setEmail('');
-        setPlatforms([]);
+        setPlatforms(PLATFORMS);
         fetchCount();
       } else {
         const errData = await res.json();
@@ -58,6 +58,13 @@ export function Hero() {
     } finally {
       setLoading(false);
     }
+  };
+  const handlePlatformChange = (p: string, checked: boolean) => {
+    setPlatforms(prev => 
+      checked 
+        ? [...prev, p] 
+        : prev.filter(item => item !== p)
+    );
   };
   return (
     <section id="waitlist" className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden">
@@ -87,27 +94,29 @@ export function Hero() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-800 h-14 rounded-2xl focus:ring-primary/50 text-lg"
+                    className="bg-zinc-900/50 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 text-lg transition-all"
                   />
-                  <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold group shadow-glow">
+                  <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold group shadow-glow active:scale-95 transition-transform">
                     {loading ? "..." : "Get Access"}
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
-                <div className="space-y-4 p-5 rounded-3xl bg-zinc-900/40 border border-zinc-800">
+                <div className="space-y-4 p-5 rounded-3xl bg-zinc-900/40 border border-zinc-800 backdrop-blur-sm">
                   <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preferred Platform</Label>
                   <div className="grid grid-cols-2 gap-y-4 gap-x-2">
                     {PLATFORMS.map((p) => (
-                      <div key={p} className="flex items-center space-x-3 group">
+                      <div key={p} className="flex items-center space-x-3 group cursor-pointer" onClick={() => handlePlatformChange(p, !platforms.includes(p))}>
                         <Checkbox
                           id={`platform-${p}`}
                           checked={platforms.includes(p)}
-                          onCheckedChange={(checked) => setPlatforms(prev => checked ? [...prev.filter(i => i !== p), p] : prev.filter(i => i !== p))}
-                          className="data-[state=checked]:bg-primary rounded-md border-zinc-700"
+                          onCheckedChange={(checked) => handlePlatformChange(p, !!checked)}
+                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md border-zinc-700 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
                         />
                         <Label
                           htmlFor={`platform-${p}`}
-                          className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors cursor-pointer"
+                          className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors cursor-pointer select-none"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {p}
                         </Label>
@@ -131,7 +140,7 @@ export function Hero() {
                       ))}
                     </div>
                     <span className="text-muted-foreground">
-                      <strong className="text-foreground">{count?.toLocaleString()}</strong> pioneers waiting
+                      <strong className="text-foreground">{count?.toLocaleString() || 0}</strong> pioneers waiting
                     </span>
                   </motion.div>
                 )}
@@ -144,7 +153,7 @@ export function Hero() {
             transition={{ duration: 1, delay: 0.2 }}
             className="relative perspective-1000 hidden lg:flex justify-center"
           >
-            <motion.div 
+            <motion.div
               whileHover={{ rotateY: -10, rotateX: 5 }}
               transition={{ type: "spring", stiffness: 100 }}
               className="relative w-[320px] h-[640px] bg-zinc-950 rounded-[3.5rem] border-[12px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
@@ -185,7 +194,6 @@ export function Hero() {
                   <div className="h-28 rounded-2xl bg-zinc-900/50 border border-white/5" />
                 </div>
               </div>
-              {/* Floaties */}
               <div className="absolute -right-6 top-1/4 bg-background border p-4 rounded-2xl shadow-2xl floating z-30">
                 <ShieldCheck className="w-7 h-7 text-primary" />
               </div>
@@ -193,12 +201,10 @@ export function Hero() {
                 <Globe className="w-7 h-7 text-primary" />
               </div>
             </motion.div>
-            {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[150px] rounded-full -z-10 animate-pulse" />
           </motion.div>
         </div>
       </div>
-      {/* Background Decorative elements */}
       <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l from-primary/5 to-transparent -z-10" />
     </section>
   );
