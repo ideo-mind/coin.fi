@@ -34,9 +34,7 @@ export function Hero() {
     fetchCount(controller.signal);
     return () => controller.abort();
   }, []);
-  const togglePlatform = (p: string) => {
-    setPlatforms(prev => prev.includes(p) ? prev.filter(i => i !== p) : [...prev, p]);
-  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return toast.error("Please enter your email");
@@ -100,11 +98,11 @@ export function Hero() {
                   <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preferred Platform</Label>
                   <div className="grid grid-cols-2 gap-y-4 gap-x-2">
                     {PLATFORMS.map((p) => (
-                      <div key={p} className="flex items-center space-x-3 group cursor-pointer" onClick={() => togglePlatform(p)}>
+                      <div key={p} className="flex items-center space-x-3 group">
                         <Checkbox
                           id={`platform-${p}`}
                           checked={platforms.includes(p)}
-                          onCheckedChange={() => togglePlatform(p)}
+                          onCheckedChange={(checked) => setPlatforms(prev => checked ? [...prev.filter(i => i !== p), p] : prev.filter(i => i !== p))}
                           className="data-[state=checked]:bg-primary rounded-md border-zinc-700"
                         />
                         <Label
