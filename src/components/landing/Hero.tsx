@@ -60,9 +60,9 @@ export function Hero() {
     }
   };
   const handlePlatformChange = (p: string, checked: boolean) => {
-    setPlatforms(prev => 
-      checked 
-        ? [...prev, p] 
+    setPlatforms(prev =>
+      checked
+        ? [...prev, p]
         : prev.filter(item => item !== p)
     );
   };
@@ -94,9 +94,9 @@ export function Hero() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 text-lg transition-all"
+                    className="bg-secondary text-secondary-foreground border-input h-14 rounded-2xl focus-visible:ring-primary focus-visible:ring-offset-0 focus-visible:border-primary/50 text-lg transition-all"
                   />
-                  <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold group shadow-glow active:scale-95 transition-transform">
+                  <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold group shadow-glow active:scale-95 transition-transform bg-primary text-primary-foreground hover:bg-primary/90">
                     {loading ? "..." : "Get Access"}
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -134,10 +134,17 @@ export function Hero() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex items-center gap-2.5 py-1 px-4 rounded-full bg-zinc-900 border border-zinc-800 text-sm"
                   >
-                    <div className="flex -space-x-2">
+                    <div className="flex -space-x-2 relative">
                       {[1,2,3].map(i => (
-                        <div key={i} className="w-5 h-5 rounded-full border-2 border-zinc-900 bg-zinc-800" />
+                        <div key={i} className="w-5 h-5 rounded-full border-2 border-zinc-900 bg-zinc-800 overflow-hidden">
+                           <div className="w-full h-full bg-gradient-to-br from-primary/40 to-zinc-700" />
+                        </div>
                       ))}
+                      <motion.div 
+                        animate={{ opacity: [1, 0, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" 
+                      />
                     </div>
                     <span className="text-muted-foreground">
                       <strong className="text-foreground">{count?.toLocaleString() || 0}</strong> pioneers waiting
@@ -172,35 +179,54 @@ export function Hero() {
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5 backdrop-blur-sm">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Gas Fee</span>
-                    <motion.span
-                      animate={{ opacity: [1, 0.5, 1], scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-black shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                    <motion.div
+                      animate={{ 
+                        opacity: [1, 0.4, 1],
+                        scale: [1, 1.1, 1],
+                        backgroundColor: ["rgba(34,197,94,0.1)", "rgba(34,197,94,0.3)", "rgba(34,197,94,0.1)"]
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="px-3 py-1 rounded-full text-green-400 text-xs font-black shadow-[0_0_15px_rgba(34,197,94,0.3)] flex items-center gap-1.5"
                     >
-                      FREE
-                    </motion.span>
+                      <Zap className="w-2.5 h-2.5 fill-green-400" />
+                      $0.00
+                    </motion.div>
                   </div>
                   <div className="h-3 w-full bg-zinc-900 rounded-full overflow-hidden border border-white/5">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: "100%" }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                      transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
                       className="h-full bg-gradient-to-r from-primary to-orange-400 shadow-glow"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="h-28 rounded-2xl bg-zinc-900/50 border border-white/5" />
-                  <div className="h-28 rounded-2xl bg-zinc-900/50 border border-white/5" />
+                  <div className="h-28 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-end p-4">
+                    <div className="h-2 w-10 bg-zinc-800 rounded-full" />
+                  </div>
+                  <div className="h-28 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-end p-4">
+                    <div className="h-2 w-10 bg-zinc-800 rounded-full" />
+                  </div>
                 </div>
               </div>
-              <div className="absolute -right-6 top-1/4 bg-background border p-4 rounded-2xl shadow-2xl floating z-30">
+              {/* Decorative Icons with floating animation */}
+              <motion.div 
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -right-6 top-1/4 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl shadow-2xl z-30"
+              >
                 <ShieldCheck className="w-7 h-7 text-primary" />
-              </div>
-              <div className="absolute -left-10 bottom-1/4 bg-background border p-4 rounded-2xl shadow-2xl floating z-30" style={{ animationDelay: '1s' }}>
+              </motion.div>
+              <motion.div 
+                animate={{ y: [0, 15, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -left-10 bottom-1/4 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl shadow-2xl z-30"
+              >
                 <Globe className="w-7 h-7 text-primary" />
-              </div>
+              </motion.div>
             </motion.div>
+            {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[150px] rounded-full -z-10 animate-pulse" />
           </motion.div>
         </div>
