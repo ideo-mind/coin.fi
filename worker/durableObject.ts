@@ -54,4 +54,8 @@ export class GlobalDurableObject extends DurableObject {
     async getWaitlistEntries(): Promise<WaitlistEntry[]> {
       return (await this.ctx.storage.get<WaitlistEntry[]>("waitlist")) || [];
     }
+    async getWaitlistCount(): Promise<number> {
+      const entries = await this.ctx.storage.get<WaitlistEntry[]>("waitlist");
+      return entries ? entries.length : 0;
+    }
 }
