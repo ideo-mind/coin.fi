@@ -7,7 +7,7 @@ export function MobileCTA() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Show fixed CTA when hero button is NOT visible (scrolled past)
+        // Show fixed CTA when hero trigger is NOT visible (scrolled past)
         setIsVisible(!entry.isIntersecting);
       },
       { threshold: 0 }
@@ -26,7 +26,7 @@ export function MobileCTA() {
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
           className="fixed bottom-6 left-4 right-4 z-[60] md:hidden"
         >
-          <div className="bg-zinc-900/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 shadow-glass-lg flex items-center justify-between gap-4 max-w-lg mx-auto overflow-hidden relative group">
+          <div className="bg-zinc-900/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 shadow-glass flex items-center justify-between gap-4 max-w-lg mx-auto overflow-hidden relative group">
             <div className="absolute -right-4 -top-4 w-32 h-32 bg-primary/15 blur-3xl rounded-full group-hover:bg-primary/25 transition-colors" />
             <div className="flex flex-col z-10">
               <span className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1 mb-0.5">

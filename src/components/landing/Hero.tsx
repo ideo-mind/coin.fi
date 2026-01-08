@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = 'https://script.google.com/macros/s/AKfycbyI6LIMhfySTUvv0pz-badX7pqtj4xWH-zf_HfmELoQEENCELmZB2kYDYRUysGl4qGh/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwS_5mifi9GBOYPV3Rkm60sFC4RnlgfeB4PU-StdYI/dev';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
@@ -19,7 +19,6 @@ export function Hero() {
     triggerOnce: true,
     threshold: 0.1,
   });
-  // Specifically for the MobileCTA to track visibility of the main CTA button
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
@@ -28,6 +27,7 @@ export function Hero() {
       const res = await fetch(API_URL, { signal });
       if (res.ok) {
         const json = await res.json();
+        // Handle various response shapes from Google Apps Script
         const pioneerCount = json.count ?? json.data?.count ?? json.data?.total ?? json.total ?? 0;
         setCount(Number(pioneerCount));
       }
@@ -54,15 +54,15 @@ export function Hero() {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('platforms', JSON.stringify(platforms));
-      const res = await fetch(API_URL, { 
-        method: 'POST', 
+      await fetch(API_URL, {
+        method: 'POST',
         body: formData,
-        mode: 'no-cors' // Google Apps Script often requires no-cors for simple POSTs
+        mode: 'no-cors'
       });
-      // With no-cors, we won't see the body, but if it doesn't throw, it likely succeeded
       toast.success("Welcome pioneer! You're on the list.");
       setEmail('');
-      fetchCount();
+      // Optimistically fetch count again
+      setTimeout(() => fetchCount(), 2000);
     } catch (err) {
       console.error(err);
       toast.error("Could not connect to the waitlist service. Please try again later.");
@@ -183,7 +183,6 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
-      {/* Expose button visibility state to window for MobileCTA to pick up without complex state lifting */}
       <div className="hidden" data-cta-visible={buttonInView} id="hero-cta-trigger" />
     </section>
   );

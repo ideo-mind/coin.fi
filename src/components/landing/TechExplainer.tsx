@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Network, Key, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 export function TechExplainer() {
   const [activeStep, setActiveStep] = useState('bundler');
   const techData = {
@@ -66,11 +66,6 @@ export function TechExplainer() {
             <div className="relative aspect-video bg-zinc-950 rounded-4xl border border-zinc-800 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg group">
               <svg viewBox="0 0 400 200" className="w-full h-auto filter drop-shadow-primary">
                 <defs>
-                  <linearGradient id="packetGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#00f2ff" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#00f2ff" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#00f2ff" stopOpacity="0" />
-                  </linearGradient>
                   <filter id="glow">
                     <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                     <feMerge>
@@ -80,39 +75,38 @@ export function TechExplainer() {
                   </filter>
                 </defs>
                 {/* Main Flow Paths */}
-                <path d="M 40 60 Q 150 60 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
-                <path d="M 40 140 Q 150 140 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
-                <path d="M 200 100 H 360" stroke="#18181b" strokeWidth="2" fill="none" />
+                <path id="pathTop" d="M 40 60 Q 150 60 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
+                <path id="pathBottom" d="M 40 140 Q 150 140 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
+                <path id="pathExit" d="M 200 100 H 360" stroke="#18181b" strokeWidth="2" fill="none" />
                 {/* Nodes */}
-                <motion.circle cx="40" cy="60" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
-                <motion.circle cx="40" cy="140" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
+                <circle cx="40" cy="60" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
+                <circle cx="40" cy="140" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
                 <motion.rect x="180" y="80" width="40" height="40" rx="8" fill="#050505" stroke="#00f2ff" strokeWidth="2" animate={{ rotate: 360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} />
-                <motion.circle cx="360" cy="100" r="15" fill="#050505" stroke="#00f2ff" strokeWidth="3" />
-                {/* Packet Particles - Staggered High Frequency Flow */}
+                <circle cx="360" cy="100" r="15" fill="#050505" stroke="#00f2ff" strokeWidth="3" />
+                {/* Packet Particles - Native SVG Animation to avoid Framer Motion prop warnings */}
                 {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
                   <React.Fragment key={i}>
                     {/* Incoming Top */}
-                    <motion.circle r="3" fill="#00f2ff" filter="url(#glow)"
-                      initial={{ offsetDistance: "0%", opacity: 0 }}
-                      animate={{ offsetDistance: "100%", opacity: [0, 1, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.45, ease: "easeInOut" }}
-                    >
-                      <animateMotion path="M 40 60 Q 150 60 200 100" dur="2s" repeatCount="indefinite" begin={`${i * 0.45}s`} />
-                    </motion.circle>
+                    <circle r="3" fill="#00f2ff" filter="url(#glow)" opacity="0">
+                      <animateMotion dur="2s" repeatCount="indefinite" begin={`${i * 0.45}s`}>
+                        <mpath href="#pathTop" />
+                      </animateMotion>
+                      <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin={`${i * 0.45}s`} />
+                    </circle>
                     {/* Incoming Bottom */}
-                    <motion.circle r="3" fill="#00f2ff" filter="url(#glow)"
-                      initial={{ offsetDistance: "0%", opacity: 0 }}
-                      animate={{ offsetDistance: "100%", opacity: [0, 1, 0] }}
-                      transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.5, ease: "easeInOut" }}
-                    >
-                      <animateMotion path="M 40 140 Q 150 140 200 100" dur="2.2s" repeatCount="indefinite" begin={`${i * 0.5}s`} />
-                    </motion.circle>
+                    <circle r="3" fill="#00f2ff" filter="url(#glow)" opacity="0">
+                      <animateMotion dur="2.2s" repeatCount="indefinite" begin={`${i * 0.5}s`}>
+                        <mpath href="#pathBottom" />
+                      </animateMotion>
+                      <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite" begin={`${i * 0.5}s`} />
+                    </circle>
                     {/* Outgoing Unified */}
-                    <motion.circle r="4" fill="#7000ff" filter="url(#glow)"
-                      initial={{ cx: 200, cy: 100, opacity: 0 }}
-                      animate={{ cx: [200, 360], opacity: [0, 1, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3, ease: "linear" }}
-                    />
+                    <circle r="4" fill="#7000ff" filter="url(#glow)" opacity="0">
+                      <animateMotion dur="1.5s" repeatCount="indefinite" begin={`${i * 0.3}s`}>
+                        <mpath href="#pathExit" />
+                      </animateMotion>
+                      <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin={`${i * 0.3}s`} />
+                    </circle>
                   </React.Fragment>
                 ))}
               </svg>
