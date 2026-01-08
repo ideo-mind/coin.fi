@@ -6,64 +6,97 @@ export function Features() {
   return (
     <div className="py-24 space-y-32 bg-[#050505]">
       {/* Chain Ticker */}
-      <section className="relative overflow-hidden py-10 border-y border-zinc-900 bg-zinc-950/50">
+      <section className="relative overflow-hidden py-12 border-y border-zinc-900 bg-zinc-950/40">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-20 items-center px-10">
               {chains.map((chain) => (
-                <div key={chain} className="flex items-center gap-3 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-black text-primary">
+                <div key={chain} className="flex items-center gap-4 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer group">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sm font-black text-primary group-hover:border-primary/50 group-hover:shadow-glow transition-all">
                     {chain[0]}
                   </div>
-                  <span className="text-lg font-bold tracking-tight text-white">{chain}</span>
+                  <span className="text-xl font-bold tracking-tight text-white">{chain}</span>
                 </div>
               ))}
             </div>
           ))}
         </div>
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10" />
+        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#050505] to-transparent z-10" />
       </section>
       {/* Problem/Solution */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="p-10 rounded-4xl bg-zinc-900/20 border border-zinc-900 space-y-8">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true, margin: "-100px" }}
+            className="p-8 md:p-12 rounded-4xl bg-zinc-900/10 border border-zinc-900/50 space-y-8 backdrop-blur-sm"
+          >
             <div className="flex items-center gap-4">
-              <XCircle className="w-8 h-8 text-red-500/50" />
+              <div className="p-2 rounded-xl bg-red-500/10">
+                <XCircle className="w-8 h-8 text-red-500/70" />
+              </div>
               <h3 className="text-2xl font-black">Legacy Wallets</h3>
             </div>
-            <ul className="space-y-6 text-zinc-500 font-medium">
-              <li>• Requires gas tokens before first transaction</li>
-              <li>• Seed phrases are single points of failure</li>
-              <li>• Complex "Approve" transactions waste time</li>
+            <ul className="space-y-6 text-zinc-500 font-medium text-lg">
+              <li className="flex items-start gap-3">• Requires gas tokens before first transaction</li>
+              <li className="flex items-start gap-3">• Seed phrases are single points of failure</li>
+              <li className="flex items-start gap-3">• Complex "Approve" transactions waste time</li>
             </ul>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="p-10 rounded-4xl bg-gradient-brand/5 border border-primary/20 space-y-8 shadow-glow">
-            <div className="flex items-center gap-4">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true, margin: "-100px" }}
+            className="p-8 md:p-12 rounded-4xl bg-gradient-brand/5 border border-primary/20 space-y-8 shadow-glow-lg relative overflow-hidden"
+          >
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 blur-[80px] rounded-full" />
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="p-2 rounded-xl bg-primary/10">
+                <CheckCircle2 className="w-8 h-8 text-primary" />
+              </div>
               <h3 className="text-2xl font-black">Coin Fi</h3>
             </div>
-            <ul className="space-y-6 text-white font-bold">
-              <li className="flex gap-3"><Zap className="w-5 h-5 text-primary shrink-0" /> Zero gas required to start</li>
-              <li className="flex gap-3"><Zap className="w-5 h-5 text-primary shrink-0" /> Social recovery & Biometrics</li>
-              <li className="flex gap-3"><Zap className="w-5 h-5 text-primary shrink-0" /> Atomic execution batches</li>
+            <ul className="space-y-6 text-white font-bold text-lg relative z-10">
+              <li className="flex gap-4 items-center">
+                <Zap className="w-6 h-6 text-primary shrink-0 animate-pulseGlow" /> 
+                Zero gas required to start
+              </li>
+              <li className="flex gap-4 items-center">
+                <Zap className="w-6 h-6 text-primary shrink-0" /> 
+                Social recovery & Biometrics
+              </li>
+              <li className="flex gap-4 items-center">
+                <Zap className="w-6 h-6 text-primary shrink-0" /> 
+                Atomic execution batches
+              </li>
             </ul>
           </motion.div>
         </div>
       </section>
       {/* Benefits Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        <h2 className="text-4xl font-black text-center">Engineered for <span className="text-gradient">Performance</span></h2>
+        <div className="text-center space-y-4">
+          <h2 className="text-4xl md:text-5xl font-black">Engineered for <span className="text-gradient">Performance</span></h2>
+          <p className="text-zinc-500 font-medium">No compromises on speed, security, or decentralization.</p>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { icon: Shield, title: 'Non-Custodial', desc: 'Total control with device hardware encryption.' },
-            { icon: Zap, title: 'Instant Execution', desc: 'Skip approvals with one-click atomic actions.' },
-            { icon: RefreshCcw, title: 'Smart Account', desc: 'Native ERC-4337 features like session keys.' },
-            { icon: Smartphone, title: 'Cross-Device', desc: 'Synced passkeys via secure enclaves.' }
+            { icon: Shield, title: 'Non-Custodial', desc: 'Total control with device hardware encryption via Secure Enclave.' },
+            { icon: Zap, title: 'Instant Execution', desc: 'Skip approvals with one-click atomic actions and bundled operations.' },
+            { icon: RefreshCcw, title: 'Smart Account', desc: 'Native ERC-4337 features like session keys and custom logic.' },
+            { icon: Smartphone, title: 'Cross-Device', desc: 'Synced passkeys via secure cloud-encrypted backup channels.' }
           ].map((b, i) => (
-            <motion.div key={i} whileHover={{ y: -10 }} className="p-8 rounded-4xl bg-zinc-900/30 border border-zinc-800 hover:border-primary/50 transition-all space-y-4">
-              <b.icon className="w-10 h-10 text-primary" />
-              <h4 className="text-xl font-bold">{b.title}</h4>
+            <motion.div 
+              key={i} 
+              whileHover={{ y: -10 }} 
+              className="p-10 rounded-4xl bg-zinc-900/20 border border-zinc-800/60 hover:border-primary/40 transition-all duration-300 group"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+                <b.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
+              </div>
+              <h4 className="text-xl font-bold mb-3">{b.title}</h4>
               <p className="text-sm text-zinc-500 font-medium leading-relaxed">{b.desc}</p>
             </motion.div>
           ))}

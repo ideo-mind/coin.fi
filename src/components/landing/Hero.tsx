@@ -15,16 +15,19 @@ export function Hero() {
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [isCountLoading, setIsCountLoading] = useState(true);
-  const { ref, inView } = useInView({
+  const { ref: sectionRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
+  });
+  // Specifically for the MobileCTA to track visibility of the main CTA button
+  const { ref: buttonRef, inView: buttonInView } = useInView({
+    threshold: 0,
   });
   const fetchCount = async (signal?: AbortSignal) => {
     try {
       const res = await fetch(API_URL, { signal });
       if (res.ok) {
         const json = await res.json();
-        // Robust parsing for various response shapes: count, data.count, or data.total
         const pioneerCount = json.count ?? json.data?.count ?? json.data?.total ?? json.total ?? 0;
         setCount(Number(pioneerCount));
       }
@@ -43,23 +46,26 @@ export function Hero() {
   }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return toast.error("Email required");
-    if (platforms.length === 0) return toast.error("Select a platform");
+    if (!email) return toast.error("Email address is required to proceed.");
+    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email address.");
+    if (platforms.length === 0) return toast.error("Please select at least one platform.");
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('platforms', JSON.stringify(platforms));
-      const res = await fetch(API_URL, { method: 'POST', body: formData });
-      if (res.ok || res.type === 'opaque') {
-        toast.success("Welcome pioneer!");
-        setEmail('');
-        fetchCount();
-      } else {
-        toast.error("Error submitting.");
-      }
+      const res = await fetch(API_URL, { 
+        method: 'POST', 
+        body: formData,
+        mode: 'no-cors' // Google Apps Script often requires no-cors for simple POSTs
+      });
+      // With no-cors, we won't see the body, but if it doesn't throw, it likely succeeded
+      toast.success("Welcome pioneer! You're on the list.");
+      setEmail('');
+      fetchCount();
     } catch (err) {
-      toast.error("Network error.");
+      console.error(err);
+      toast.error("Could not connect to the waitlist service. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -68,7 +74,7 @@ export function Hero() {
     setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
   };
   return (
-    <section id="waitlist" ref={ref} className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#050505]">
+    <section id="waitlist" ref={sectionRef} className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#050505]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -88,7 +94,7 @@ export function Hero() {
               Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
             </p>
             <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3" ref={buttonRef}>
                 <Input
                   type="email"
                   placeholder="name@example.com"
@@ -104,18 +110,16 @@ export function Hero() {
               <div className="p-5 rounded-3xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm">
                 <div className="grid grid-cols-2 gap-y-4 gap-x-2">
                   {PLATFORMS.map((p) => (
-                    <div key={p} className="flex items-center space-x-3 group cursor-pointer" onClick={() => togglePlatform(p)}>
+                    <div key={p} className="flex items-center space-x-3 group">
                       <Checkbox
                         id={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
                         checked={platforms.includes(p)}
                         onCheckedChange={() => togglePlatform(p)}
                         className="data-[state=checked]:bg-primary"
-                        onClick={(e) => e.stopPropagation()}
                       />
-                      <Label 
-                        htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`} 
-                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer"
-                        onClick={(e) => e.stopPropagation()}
+                      <Label
+                        htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
+                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer flex-1 py-1"
                       >
                         {p}
                       </Label>
@@ -128,7 +132,7 @@ export function Hero() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-to-br from-primary to-secondary" />
+                    <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
@@ -149,16 +153,16 @@ export function Hero() {
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
                 <div className="h-14 w-14 rounded-2xl bg-[#f38020]/20 flex items-center justify-center shadow-glow shadow-[#f38020]/10 overflow-hidden">
-                  <img 
-                    src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png" 
-                    alt="Coin Fi App" 
+                  <img
+                    src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
+                    alt="Coin Fi App"
                     className="w-10 h-10 object-contain brightness-110"
                   />
                 </div>
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-bold text-muted-foreground uppercase">Gas Cost</span>
-                    <div className="px-3 py-1 rounded-full text-primary text-xs font-black shadow-glow flex items-center gap-1.5 animate-pulse">
+                    <div className="px-3 py-1 rounded-full text-primary text-xs font-black shadow-glow flex items-center gap-1.5 animate-pulseGlow">
                       $0.00
                     </div>
                   </div>
@@ -179,6 +183,8 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
+      {/* Expose button visibility state to window for MobileCTA to pick up without complex state lifting */}
+      <div className="hidden" data-cta-visible={buttonInView} id="hero-cta-trigger" />
     </section>
   );
 }
