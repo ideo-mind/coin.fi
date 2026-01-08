@@ -3,45 +3,24 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --primary: 24 90% 54%; /* #F38020 derived HSL */
-    --primary-foreground: 0 0% 98%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --border: 0 0% 89.8%;
-    --ring: 24 90% 54%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --input: 0 0% 89.8%;
-    --radius: 1rem;
-  }
-  .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --primary: 24 90% 54%;
-    --primary-foreground: 0 0% 3.9%;
+    --primary: 182 100% 50%; /* Cyan #00f2ff */
+    --primary-foreground: 240 10% 3.9%;
     --muted: 240 5.9% 10%;
     --muted-foreground: 240 3.8% 60%;
     --border: 240 5.9% 15%;
-    --ring: 24 90% 54%;
+    --ring: 182 100% 50%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --secondary: 240 5.9% 10%;
+    --secondary: 266 100% 50%; /* Violet #7000ff */
     --secondary-foreground: 0 0% 98%;
     --accent: 240 5.9% 15%;
     --accent-foreground: 0 0% 98%;
     --input: 240 5.9% 15%;
+    --radius: 1rem;
   }
   * {
     @apply border-border;
@@ -49,17 +28,17 @@
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: #050505;
   }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    text-rendering: optimizeLegibility;
+    background: #050505;
   }
 }
 @layer components {
   .text-gradient {
-    @apply bg-gradient-to-r from-[#F38020] via-[#E55A1B] to-[#D14615] bg-clip-text text-transparent font-bold;
+    @apply bg-gradient-to-r from-[#00f2ff] to-[#7000ff] bg-clip-text text-transparent font-bold;
   }
   .glass {
     @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
@@ -72,6 +51,6 @@
   }
   .btn-gradient {
     @apply inline-flex items-center justify-center px-8 py-3 rounded-full font-bold text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-glow;
-    background: linear-gradient(135deg, #F38020 0%, #E55A1B 100%);
+    background: linear-gradient(135deg, #00f2ff 0%, #7000ff 100%);
   }
 }
