@@ -16,12 +16,23 @@ export function HomePage() {
         <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full opacity-30" />
       </div>
       <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <TechExplainer />
-        <SecurityScan />
-        <PricingAndFAQ />
+      <main className="relative">
+        <div className="space-y-16 md:space-y-24 lg:space-y-32 pb-16 md:pb-24 lg:pb-32">
+          {/* Hero uses internal padding for specific alignment */}
+          <Hero />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Features />
+          </div>
+          <div className="w-full">
+            <TechExplainer />
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SecurityScan />
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <PricingAndFAQ />
+          </div>
+        </div>
       </main>
       <Footer />
       <Toaster position="top-center" richColors />

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Wallet2, Zap, ShieldCheck, Globe, Users } from 'lucide-react';
 import { toast } from 'sonner';
 const API_URL = '/api/waitlist';
+const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
   const [platforms, setPlatforms] = useState<string[]>([]);
@@ -52,7 +53,6 @@ export function Hero() {
         toast.success("Welcome to the future of gasless web3!");
         setEmail('');
         setPlatforms([]);
-        // Refresh count immediately
         fetchCount();
       } else {
         const errData = await res.json();
@@ -85,7 +85,7 @@ export function Hero() {
               Proprietary bundler technology powered by ERC-7702 and ERC-4337. Secure, non-custodial, and truly zero gas.
             </p>
             <div className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+              <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     type="email"
@@ -98,13 +98,26 @@ export function Hero() {
                     {loading ? "Joining..." : "Join Early Access"}
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-4 pt-2">
-                  {['iOS', 'Android', 'Browser'].map((p) => (
-                    <div key={p} className="flex items-center space-x-2">
-                      <Checkbox id={p} checked={platforms.includes(p)} onCheckedChange={() => togglePlatform(p)} />
-                      <Label htmlFor={p} className="text-sm text-muted-foreground cursor-pointer">{p}</Label>
-                    </div>
-                  ))}
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold text-foreground/80">Select your platforms</Label>
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-6 gap-y-3">
+                    {PLATFORMS.map((p) => (
+                      <div key={p} className="flex items-center space-x-2 group cursor-pointer" onClick={() => togglePlatform(p)}>
+                        <Checkbox 
+                          id={`platform-${p}`} 
+                          checked={platforms.includes(p)} 
+                          onCheckedChange={() => togglePlatform(p)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Label 
+                          htmlFor={`platform-${p}`} 
+                          className="text-sm text-muted-foreground group-hover:text-foreground transition-colors cursor-pointer select-none"
+                        >
+                          {p}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </form>
               <div className="min-h-[24px]">
@@ -114,14 +127,14 @@ export function Hero() {
                     <div className="h-3 w-32 bg-muted rounded" />
                   </div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2 text-sm text-muted-foreground"
                   >
                     <Users className="w-4 h-4 text-primary" />
                     <span>
-                      Already <span className="text-foreground font-bold animate-pulse">{count?.toLocaleString()}</span> pioneers on the waitlist!
+                      Already <span className="text-foreground font-bold">{count?.toLocaleString() || '0'}</span> pioneers on the waitlist!
                     </span>
                   </motion.div>
                 )}
