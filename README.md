@@ -1,6 +1,6 @@
 # Cloudflare Workers Full-Stack Template
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/laciferin2024/coin.fi)
 
 A production-ready full-stack application template built on Cloudflare Workers. Features a React frontend with Vite, shadcn/ui components, TailwindCSS, and a Hono-powered Workers backend with Durable Objects for persistent state.
 
@@ -102,7 +102,7 @@ bun run deploy
 
 This builds frontend assets and deploys the Worker. Assets are served as a single-page app.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/laciferin2024/coin.fi)
 
 ### Custom Domain & Config
 
