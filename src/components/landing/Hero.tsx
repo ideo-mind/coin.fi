@@ -90,14 +90,38 @@ export function Hero() {
           timestamp: new Date().toISOString()
         })
       });
-      if (response.ok) {
-        toast.success("Welcome aboard! Check your email for next steps.", { id: toastId });
-        setEmail('');
-        setTimeout(() => fetchCount(), 2000);
-      } else {
+      
+      const text = await response.text();
+      
+      if (!response.ok) {
+        console.error('[Hero] Waitlist server error:', {
+          status: response.status,
+          statusText: response.statusText,
+          bodyPreview: text.slice(0, 300)
+        });
         throw new Error("Submission failed");
       }
+      
+      // Attempt JSON parse for GAS/server errors even on 200
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && parsed.error) {
+          console.error('[Hero] GAS error:', parsed.error);
+          throw new Error(parsed.error);
+        }
+      } catch {
+        // Unknown response format, assume success (preserve current behavior)
+      }
+      
+      toast.success("Welcome aboard! Check your email for next steps.", { id: toastId });
+      setEmail('');
+      setTimeout(() => fetchCount(), 2000);
     } catch (err) {
+      console.error('[Hero] Waitlist submission error:', {
+        name: err instanceof Error ? err.name : 'Unknown',
+        message: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString()
+      });
       toast.error("Network error. We've queued your request.", { id: toastId });
     } finally {
       setLoading(false);
