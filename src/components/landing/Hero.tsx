@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Zap, ShieldCheck, ArrowRight, RefreshCcw } from 'lucide-react';
+import { Zap, ArrowRight, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbzW3zcBlEZOoLJCymFh8M2ZBG13BSN7lcNF3pcQ_jkxKZ6DN5taYwSd_GG_zo-GI2QI/exec';
+const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMAvL5Eyhbfs9aoyUhKi2RZvNXvkYXTxXtxDQ7LlpbrL5XuD3jv1j92lXHFRx6G5Dk/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 const FALLBACK_COUNT = 12540;
 export function Hero() {
@@ -16,6 +16,8 @@ export function Hero() {
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [isCountLoading, setIsCountLoading] = useState(true);
+  // Ref to track count without triggering re-renders in the dependency chain
+  const countRef = useRef<number | null>(null);
   const { ref: sectionRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -24,8 +26,10 @@ export function Hero() {
     threshold: 0,
   });
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
-    // Only show loading if we don't have a count yet to prevent flicker
-    if (!count) setIsCountLoading(true);
+    // Only show loading if we don't have a count yet to prevent flicker on refresh
+    if (countRef.current === null) {
+      setIsCountLoading(true);
+    }
     const timeoutController = new AbortController();
     const timeoutId = setTimeout(() => timeoutController.abort(), 8000);
     const activeSignal = signal || timeoutController.signal;
@@ -48,23 +52,29 @@ export function Hero() {
       }
       if (pioneerCount && !isNaN(pioneerCount)) {
         setCount(pioneerCount);
-      } else if (!count) {
+        countRef.current = pioneerCount;
+      } else if (countRef.current === null) {
         setCount(FALLBACK_COUNT);
+        countRef.current = FALLBACK_COUNT;
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        if (!count) setCount(FALLBACK_COUNT);
+        console.error('[Hero] Count fetch error:', err);
+        if (countRef.current === null) {
+          setCount(FALLBACK_COUNT);
+          countRef.current = FALLBACK_COUNT;
+        }
       }
     } finally {
       clearTimeout(timeoutId);
       setIsCountLoading(false);
     }
-  }, [count]);
+  }, []); // Empty dependencies because we use countRef
   useEffect(() => {
     const controller = new AbortController();
     fetchCount(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [fetchCount]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email.");
@@ -85,11 +95,14 @@ export function Hero() {
       if (response.ok) {
         toast.success("Welcome aboard! Check your email for next steps.");
         setEmail('');
+        // Re-fetch count after successful signup to show progress
         setTimeout(() => fetchCount(), 2000);
       } else {
-        throw new Error('Submission failed');
+        const errorText = await response.text();
+        throw new Error(`Submission failed: ${errorText}`);
       }
     } catch (err) {
+      console.error('[Hero] Waitlist submission error:', err);
       toast.error("Network error. We've queued your request.");
     } finally {
       setLoading(false);
