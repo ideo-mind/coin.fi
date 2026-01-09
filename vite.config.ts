@@ -53,6 +53,7 @@ const customLogger = {
 function watchDependenciesPlugin() {
   return {
     name: "watch-dependencies",
+    // biome-ignore lint/suspicious/noExplicitAny: Vite server type
     configureServer(server: any) {
       const filesToWatch = [
         path.resolve("package.json"),
@@ -71,7 +72,7 @@ function watchDependenciesPlugin() {
 
           exec(
             "rm -f .eslintcache tsconfig.tsbuildinfo",
-            (err, stdout, stderr) => {
+            (err, _stdout, stderr) => {
               if (err) {
                 console.error("Failed to clear caches:", stderr);
                 return;
@@ -88,6 +89,7 @@ function watchDependenciesPlugin() {
 function reloadTriggerPlugin() {
   return {
     name: "reload-trigger",
+    // biome-ignore lint/suspicious/noExplicitAny: Vite server type
     configureServer(server: any) {
       const triggerFile = path.resolve(".reload-trigger");
       server.watcher.add(triggerFile);

@@ -69,9 +69,9 @@ export function Hero() {
         );
       } catch {
         const num = parseInt(text.trim());
-        if (!isNaN(num)) pioneerCount = num;
+        if (!Number.isNaN(num)) pioneerCount = num;
       }
-      if (pioneerCount && !isNaN(pioneerCount)) {
+      if (pioneerCount && !Number.isNaN(pioneerCount)) {
         setCount(pioneerCount);
         countRef.current = pioneerCount;
       } else if (countRef.current === null) {
@@ -126,7 +126,8 @@ export function Hero() {
         setLoading(false);
         return;
       }
-      let data;
+      // biome-ignore lint/suspicious/noExplicitAny: JSON parsing
+      let data: any;
       try {
         data = JSON.parse(text);
       } catch {

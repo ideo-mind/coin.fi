@@ -1,132 +1,78 @@
-# Cloudflare Workers Full-Stack Template
+# Coin Fi Landing Page
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/laciferin2024/coin.fi)
+Marketing site for **Coin Fi** – the world’s first non‑custodial wallet that sponsors unlimited gas for EVM transactions on top chains.
 
-A production-ready full-stack application template built on Cloudflare Workers. Features a React frontend with Vite, shadcn/ui components, TailwindCSS, and a Hono-powered Workers backend with Durable Objects for persistent state.
+Live site: https://coinfi.ideomind.org
 
-## Features
+---
 
-- **Cloudflare Workers Backend**: Serverless API with Hono routing, CORS, logging, and error handling.
-- **Durable Objects**: Built-in SQLite-backed storage for counters, lists, and persistent data.
-- **React 18 Frontend**: Vite-powered, TypeScript, with React Router, TanStack Query, and client-side state management.
-- **Modern UI**: shadcn/ui components, TailwindCSS with custom design tokens, dark mode, animations, and responsive design.
-- **State Management**: Immer/Zustand ready, TanStack Query for data fetching.
-- **Developer Experience**: Hot reload, TypeScript end-to-end, ESLint, error boundaries, and client error reporting.
-- **Demo Endpoints**: Counter, demo items CRUD operations using Durable Objects.
-- **Layout Options**: Optional app sidebar with collapsible mobile support.
+## Purpose
 
-## Tech Stack
+This landing page exists to:
 
-- **Frontend**: React 18, Vite, TypeScript, TailwindCSS, shadcn/ui, Lucide React, Framer Motion, React Router, TanStack Query, Sonner (toasts), Radix UI primitives.
-- **Backend**: Cloudflare Workers, Hono, Durable Objects (SQLite).
-- **Tools**: Bun (package manager), Wrangler (CLI), ESLint, PostCSS.
-- **Utilities**: clsx, tailwind-merge, Zod, UUID, Date-fns.
+- Explain what Coin Fi is in simple, benefit‑first language.
+- Position Coin Fi as the safest, most seamless way to use Ethereum and leading EVM chains with **gas‑free transactions**.
+- Collect early‑access signups and platform preferences (iOS, Android, Chrome extension, Web app).
+- Direct visitors to the right distribution channels as apps go live (App Store, Play Store, Chrome Web Store, web app).
 
-## Quick Start
+No implementation or tech‑stack details are included here; this document is strictly for product and marketing context.[web:87]
 
-1. **Prerequisites**:
-   - [Bun](https://bun.sh/) installed.
-   - [Cloudflare Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/installation/) installed and authenticated (`wrangler login`).
+---
 
-2. **Clone & Install**:
-   ```bash
-   git clone <your-repo-url>
-   cd <project-name>
-   bun install
-   ```
+## Core Message
 
-3. **Development**:
-   ```bash
-   bun run dev
-   ```
-   Opens at `http://localhost:3000` (or `$PORT`). Frontend and Worker hot-reload.
+**Tagline (working):**  
+> Gas‑free, non‑custodial wallet for every EVM transaction.
 
-4. **Type Generation** (for Worker env types):
-   ```bash
-   bun run cf-typegen
-   ```
+**Positioning:**  
+Coin Fi is a non‑custodial Ethereum wallet that sponsors unlimited gas on top EVM chains, lets users sign with passkeys instead of seed phrases, and runs a 3D AI security scan on every transaction before it’s confirmed.
 
-## Development
+Key ideas we want visitors to remember:
 
-### Scripts
+- You keep full control of your funds and keys.
+- Coin Fi pays gas for you on supported chains.
+- Every transaction is inspected and explained before you sign.
 
-| Script | Description |
-|--------|-------------|
-| `bun run dev` | Start dev server (Vite + Worker preview). |
-| `bun run build` | Build frontend assets. |
-| `bun run lint` | Run ESLint. |
-| `bun run preview` | Preview production build. |
-| `bun run deploy` | Build + deploy to Cloudflare. |
-| `bun run cf-typegen` | Generate Worker types. |
+---
 
-### Project Structure
+## Target Audience
 
-```
-├── src/              # React frontend
-├── worker/           # Cloudflare Worker backend
-├── shared/           # Shared types & mocks
-├── tailwind.config.js # Tailwind + shadcn config
-└── wrangler.jsonc    # Worker config
-```
+- **Power users & traders** tired of paying gas and worrying about scam contracts.
+- **NFT and DeFi users** who want a safer, simpler transaction flow.
+- **Builders and protocol teams** looking for a better UX layer for their communities.
 
-- **Frontend Customization**: Edit `src/pages/HomePage.tsx`. Add routes in `src/main.tsx`.
-- **Backend Routes**: Add endpoints in `worker/userRoutes.ts` (auto-loaded).
-- **Durable Objects**: Extend `worker/durableObject.ts`.
-- **UI Components**: Use shadcn/ui from `@/components/ui/*`. Add custom in `src/components/`.
-- **Theme**: Toggle with `ThemeToggle`. Custom CSS vars in `src/index.css`.
+The tone should feel:
 
-### API Endpoints (Demo)
+- Confident but not hypey.
+- Web3‑native but understandable for advanced beginners.
+- Security‑obsessed and user‑first.
 
-Base URL: `/api`
+---
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check. |
-| GET | `/api/test` | Simple test. |
-| GET | `/api/counter` | Get counter value (Durable Object). |
-| POST | `/api/counter/increment` | Increment counter. |
-| GET/POST/PUT/DELETE | `/api/demo` | CRUD demo items (Durable Object). |
-| POST | `/api/client-errors` | Report frontend errors. |
+## What the Page Communicates
 
-### Env Bindings (Wrangler)
+### 1. What Coin Fi Is
 
-- `GlobalDurableObject`: Durable Object namespace.
+- A non‑custodial Ethereum & EVM wallet.
+- Gas‑free for all supported transactions on top chains.
+- Available soon on:
+  - iOS (App Store)
+  - Android (Play Store)
+  - Chrome extension
+  - Web app
 
-## Deployment
+### 2. Why It’s Different
 
-Deploy to Cloudflare Workers with Pages integration (SPA + API):
+- **Unlimited gas sponsorship** on leading EVM chains (e.g., Ethereum, Optimism, Arbitrum, Base, Polygon – final list kept in on‑page copy).[web:85]  
+- **Fully non‑custodial:** keys live on the user’s phone; Coin Fi can never move funds.  
+- **Passkey‑first:** sign with device/browser passkeys instead of seed phrases.  
+- **3D AI Scan:**  
+  - 1D – contract & recipient checks (phishing prevention).  
+  - 2D – transaction simulation with human‑readable explanation.  
+  - 3D – deep threat, MEV, and contract‑behavior analysis.
 
-```bash
-bun run deploy
-```
+### 3. How It Feels to Use
 
-This builds frontend assets and deploys the Worker. Assets are served as a single-page app.
-
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/laciferin2024/coin.fi)
-
-### Custom Domain & Config
-
-Edit `wrangler.jsonc`:
-- Update `name`.
-- Add secrets: `wrangler secret put <NAME>`.
-- Custom assets/domain in `assets` block.
-
-### Production Tips
-
-- Enable Workers Analytics Engine for metrics.
-- Use KV/R2 for additional storage.
-- Minify with Vite (enabled in prod).
-- Monitor with Cloudflare dashboard.
-
-## Contributing
-
-1. Fork & clone.
-2. `bun install`.
-3. `bun run dev`.
-4. Submit PR.
-
-Report issues via GitHub.
-
-## License
-
-MIT. See [LICENSE](LICENSE) for details.
+- Onboarding: download app, create wallet, link passkey, start sending gas‑free transactions.
+- Daily use: connect to favorite dapps, see a clear AI summary of every transaction, confirm with one tap/passkey.
+- Cross‑device: private key stays on phone while browser passkey lets you sign safely from desktop.

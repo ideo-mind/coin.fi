@@ -22,6 +22,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// biome-ignore lint/style/noNonNullAssertion: Root element exists
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -1,5 +1,5 @@
 import { Menu } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -30,8 +30,9 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div
-          className="flex items-center gap-3 group cursor-pointer"
+        <button
+          type="button"
+          className="flex items-center gap-3 group cursor-pointer bg-transparent border-none p-0"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0 ring-1 ring-white/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[#f38020]/40">
@@ -44,7 +45,7 @@ export function Navbar() {
           <span className="text-xl font-black tracking-tight text-white group-hover:text-primary transition-colors">
             Coin Fi
           </span>
-        </div>
+        </button>
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (

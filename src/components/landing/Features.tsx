@@ -141,7 +141,7 @@ export function Features() {
               title: "Cross-Device",
               desc: "Synced passkeys via secure cloud-encrypted backup channels.",
             },
-          ].map((b, i) => (
+          ].map((b) => (
             <motion.div
               key={b.title}
               whileHover={{ y: -10 }}

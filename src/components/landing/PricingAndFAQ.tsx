@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, ChevronDown } from "lucide-react";
-import React from "react";
+import { Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,

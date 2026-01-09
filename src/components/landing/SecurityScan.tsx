@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, Eye, ShieldCheck } from "lucide-react";
-import React from "react";
+
 export function SecurityScan() {
   return (
     <section id="security" className="py-24 bg-[#050505]">

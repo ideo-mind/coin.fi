@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export function TechExplainer() {
   const [activeStep, setActiveStep] = useState("bundler");
@@ -90,9 +90,9 @@ export function TechExplainer() {
                   </p>
                   <ul className="space-y-4">
                     {techData[activeStep as keyof typeof techData].points.map(
-                      (p, i) => (
+                      (p, _i) => (
                         <li
-                          key={i}
+                          key={p}
                           className="flex items-center gap-3 text-primary font-bold group cursor-default"
                         >
                           <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />{" "}
@@ -196,7 +196,7 @@ export function TechExplainer() {
                   filter="url(#svgGlow)"
                 />
                 {[0, 1, 2].map((i) => (
-                  <React.Fragment key={i}>
+                  <Fragment key={i}>
                     <circle
                       r="3.5"
                       fill="#00f2ff"
@@ -263,7 +263,7 @@ export function TechExplainer() {
                         begin={`${i * 0.7}s`}
                       />
                     </circle>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </svg>
             </div>
