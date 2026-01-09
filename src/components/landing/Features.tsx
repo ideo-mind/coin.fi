@@ -1,7 +1,25 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Shield, Zap, RefreshCcw, Smartphone, CheckCircle2, XCircle } from 'lucide-react';
-const chains = ['Ethereum', 'Polygon', 'Arbitrum', 'Optimism', 'Base', 'Avalanche', 'Mantle', 'Scroll', 'Linea'];
+import { motion } from "framer-motion";
+import {
+  CheckCircle2,
+  RefreshCcw,
+  Shield,
+  Smartphone,
+  XCircle,
+  Zap,
+} from "lucide-react";
+import React from "react";
+
+const chains = [
+  "Ethereum",
+  "Polygon",
+  "Arbitrum",
+  "Optimism",
+  "Base",
+  "Avalanche",
+  "Mantle",
+  "Scroll",
+  "Linea",
+];
 export function Features() {
   return (
     <div className="py-24 space-y-32 bg-[#050505] overflow-hidden">
@@ -9,13 +27,19 @@ export function Features() {
       <section className="w-full relative overflow-hidden py-14 border-y border-zinc-900 bg-zinc-950/40">
         <div className="flex animate-marquee whitespace-nowrap will-change-transform">
           {[...Array(4)].map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Marquee items need index key
             <div key={i} className="flex gap-24 items-center px-12">
               {chains.map((chain) => (
-                <div key={chain} className="flex items-center gap-4 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer group">
+                <div
+                  key={chain}
+                  className="flex items-center gap-4 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer group"
+                >
                   <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sm font-black text-primary group-hover:border-primary/50 group-hover:shadow-glow transition-all ring-1 ring-white/5">
                     {chain[0]}
                   </div>
-                  <span className="text-xl font-bold tracking-tight text-white">{chain}</span>
+                  <span className="text-xl font-bold tracking-tight text-white">
+                    {chain}
+                  </span>
                 </div>
               ))}
             </div>
@@ -87,26 +111,51 @@ export function Features() {
       {/* Benefits Grid - Guttered */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight">Engineered for <span className="text-gradient">Performance</span></h2>
-          <p className="text-zinc-500 font-medium text-lg max-w-2xl mx-auto">Native account abstraction features that disappear into the background.</p>
+          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight">
+            Engineered for <span className="text-gradient">Performance</span>
+          </h2>
+          <p className="text-zinc-500 font-medium text-lg max-w-2xl mx-auto">
+            Native account abstraction features that disappear into the
+            background.
+          </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { icon: Shield, title: 'Non-Custodial', desc: 'Total control with hardware encryption via the Secure Enclave.' },
-            { icon: Zap, title: 'Instant Execution', desc: 'Skip approvals with one-click atomic actions and bundled operations.' },
-            { icon: RefreshCcw, title: 'Smart Account', desc: 'Native ERC-4337 features like session keys and custom logic.' },
-            { icon: Smartphone, title: 'Cross-Device', desc: 'Synced passkeys via secure cloud-encrypted backup channels.' }
+            {
+              icon: Shield,
+              title: "Non-Custodial",
+              desc: "Total control with hardware encryption via the Secure Enclave.",
+            },
+            {
+              icon: Zap,
+              title: "Instant Execution",
+              desc: "Skip approvals with one-click atomic actions and bundled operations.",
+            },
+            {
+              icon: RefreshCcw,
+              title: "Smart Account",
+              desc: "Native ERC-4337 features like session keys and custom logic.",
+            },
+            {
+              icon: Smartphone,
+              title: "Cross-Device",
+              desc: "Synced passkeys via secure cloud-encrypted backup channels.",
+            },
           ].map((b, i) => (
             <motion.div
-              key={i}
+              key={b.title}
               whileHover={{ y: -10 }}
               className="p-10 rounded-4xl bg-zinc-900/20 border border-zinc-800/40 hover:border-primary/50 transition-all duration-300 group ring-1 ring-white/5"
             >
               <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-primary/10 group-hover:shadow-glow transition-all ring-1 ring-white/5">
                 <b.icon className="w-8 h-8 text-primary group-hover:animate-pulseGlow transition-transform" />
               </div>
-              <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">{b.title}</h4>
-              <p className="text-sm text-zinc-500 font-medium leading-relaxed">{b.desc}</p>
+              <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                {b.title}
+              </h4>
+              <p className="text-sm text-zinc-500 font-medium leading-relaxed">
+                {b.desc}
+              </p>
             </motion.div>
           ))}
         </div>

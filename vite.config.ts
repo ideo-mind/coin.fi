@@ -1,18 +1,19 @@
 // Making changes to this file is **STRICTLY** forbidden. All the code in here is 100% correct and audited.
-import { defineConfig, loadEnv } from "vite";
-import path from "path";
-import react from "@vitejs/plugin-react";
+
 import { exec } from "node:child_process";
-import pino from "pino";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import pino from "pino";
+import { defineConfig, loadEnv } from "vite";
 
 const logger = pino();
 
 const stripAnsi = (str: string) =>
   str.replace(
-    // eslint-disable-next-line no-control-regex -- Allow ANSI escape stripping
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: Allow ANSI escape stripping
     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-    ""
+    "",
   );
 
 const LOG_MESSAGE_BOUNDARY = /\n(?=\[[A-Z][^\]]*\])/g;
@@ -64,8 +65,8 @@ function watchDependenciesPlugin() {
         if (filesToWatch.includes(filePath)) {
           console.log(
             `\n Dependency file changed: ${path.basename(
-              filePath
-            )}. Clearing caches...`
+              filePath,
+            )}. Clearing caches...`,
           );
 
           exec(
@@ -76,7 +77,7 @@ function watchDependenciesPlugin() {
                 return;
               }
               console.log("Caches cleared successfully.\n");
-            }
+            },
           );
         }
       });
@@ -105,7 +106,12 @@ function reloadTriggerPlugin() {
 export default ({ mode }: { mode: string }) => {
   const env = loadEnv(mode, process.cwd());
   return defineConfig({
-    plugins: [react(), cloudflare(), watchDependenciesPlugin(), reloadTriggerPlugin()],
+    plugins: [
+      react(),
+      cloudflare(),
+      watchDependenciesPlugin(),
+      reloadTriggerPlugin(),
+    ],
     build: {
       minify: true,
       sourcemap: "inline", // Use inline source maps for better error reporting
@@ -115,7 +121,7 @@ export default ({ mode }: { mode: string }) => {
         },
       },
     },
-    customLogger: env.VITE_LOGGER_TYPE === 'json' ? customLogger : undefined,
+    customLogger: env.VITE_LOGGER_TYPE === "json" ? customLogger : undefined,
     // Enable source maps in development too
     css: {
       devSourcemap: true,

@@ -1,37 +1,37 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect } from "react";
 import {
-  UNSAFE_DataRouterStateContext,
   isRouteErrorResponse,
+  UNSAFE_DataRouterStateContext,
   useInRouterContext,
   useRouteError,
-} from 'react-router-dom'
+} from "react-router-dom";
 
-import { errorReporter } from '@/lib/errorReporter'
-import { ErrorFallback } from './ErrorFallback'
+import { errorReporter } from "@/lib/errorReporter";
+import { ErrorFallback } from "./ErrorFallback";
 
-type RouteError = unknown
+type RouteError = unknown;
 
 function reportRouteError(error: RouteError) {
-  if (!error) return
+  if (!error) return;
 
-  let errorMessage = 'Unknown route error'
-  let errorStack = ''
+  let errorMessage = "Unknown route error";
+  let errorStack = "";
 
   if (isRouteErrorResponse(error)) {
-    errorMessage = `Route Error ${error.status}: ${error.statusText}`
+    errorMessage = `Route Error ${error.status}: ${error.statusText}`;
     if (error.data) {
-      errorMessage += ` - ${JSON.stringify(error.data)}`
+      errorMessage += ` - ${JSON.stringify(error.data)}`;
     }
   } else if (error instanceof Error) {
-    errorMessage = error.message
-    errorStack = error.stack || ''
-  } else if (typeof error === 'string') {
-    errorMessage = error
+    errorMessage = error.message;
+    errorStack = error.stack || "";
+  } else if (typeof error === "string") {
+    errorMessage = error;
   } else {
     try {
-      errorMessage = JSON.stringify(error)
+      errorMessage = JSON.stringify(error);
     } catch {
-      errorMessage = String(error)
+      errorMessage = String(error);
     }
   }
 
@@ -40,26 +40,28 @@ function reportRouteError(error: RouteError) {
     stack: errorStack,
     url: window.location.href,
     timestamp: new Date().toISOString(),
-    source: 'react-router',
+    source: "react-router",
     error,
-    level: 'error',
-  })
+    level: "error",
+  });
 }
 
 function RouteErrorBoundaryView({ error }: { error: RouteError }) {
   useEffect(() => {
-    reportRouteError(error)
-  }, [error])
+    reportRouteError(error);
+  }, [error]);
 
   if (isRouteErrorResponse(error)) {
     return (
       <ErrorFallback
         title={`${error.status} ${error.statusText}`}
         message="Sorry, an error occurred while loading this page."
-        error={error.data ? { message: JSON.stringify(error.data, null, 2) } : error}
+        error={
+          error.data ? { message: JSON.stringify(error.data, null, 2) } : error
+        }
         statusMessage="Navigation error detected"
       />
-    )
+    );
   }
 
   return (
@@ -69,33 +71,33 @@ function RouteErrorBoundaryView({ error }: { error: RouteError }) {
       error={error}
       statusMessage="Routing error detected"
     />
-  )
+  );
 }
 
 function DataRouterRouteErrorBoundary() {
-  const error = useRouteError()
-  return <RouteErrorBoundaryView error={error} />
+  const error = useRouteError();
+  return <RouteErrorBoundaryView error={error} />;
 }
 
 export function RouteErrorBoundary() {
-  const inRouter = useInRouterContext()
-  const dataRouterState = useContext(UNSAFE_DataRouterStateContext)
+  const inRouter = useInRouterContext();
+  const dataRouterState = useContext(UNSAFE_DataRouterStateContext);
 
-  const misconfigured = !inRouter || !dataRouterState
+  const misconfigured = !inRouter || !dataRouterState;
   const message = !inRouter
-    ? 'Router is not mounted. Add a router at the app root.'
-    : 'This router does not support route errors. Use createBrowserRouter + RouterProvider.'
+    ? "Router is not mounted. Add a router at the app root."
+    : "This router does not support route errors. Use createBrowserRouter + RouterProvider.";
 
   useEffect(() => {
-    if (!misconfigured) return
+    if (!misconfigured) return;
     errorReporter.report({
       message,
       url: window.location.href,
       timestamp: new Date().toISOString(),
-      source: 'react-router',
-      level: 'error',
-    })
-  }, [misconfigured, message])
+      source: "react-router",
+      level: "error",
+    });
+  }, [misconfigured, message]);
 
   // Guard: If this component is rendered outside of a data router (e.g. BrowserRouter)
   // then useRouteError() would throw. Show a friendly fallback instead.
@@ -106,8 +108,8 @@ export function RouteErrorBoundary() {
         message={message}
         statusMessage="Routing error boundary could not initialize"
       />
-    )
+    );
   }
 
-  return <DataRouterRouteErrorBoundary />
+  return <DataRouterRouteErrorBoundary />;
 }

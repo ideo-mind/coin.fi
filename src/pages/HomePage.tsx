@@ -1,13 +1,13 @@
-import React from 'react';
-import { Navbar } from '@/components/landing/Navbar';
-import { Hero } from '@/components/landing/Hero';
-import { Features } from '@/components/landing/Features';
-import { TechExplainer } from '@/components/landing/TechExplainer';
-import { SecurityScan } from '@/components/landing/SecurityScan';
-import { PricingAndFAQ } from '@/components/landing/PricingAndFAQ';
-import { Footer } from '@/components/landing/Footer';
-import { MobileCTA } from '@/components/landing/MobileCTA';
-import { Toaster } from '@/components/ui/sonner';
+import React from "react";
+import { Features } from "@/components/landing/Features";
+import { Footer } from "@/components/landing/Footer";
+import { Hero } from "@/components/landing/Hero";
+import { MobileCTA } from "@/components/landing/MobileCTA";
+import { Navbar } from "@/components/landing/Navbar";
+import { PricingAndFAQ } from "@/components/landing/PricingAndFAQ";
+import { SecurityScan } from "@/components/landing/SecurityScan";
+import { TechExplainer } from "@/components/landing/TechExplainer";
+import { Toaster } from "@/components/ui/sonner";
 export function HomePage() {
   return (
     <div className="min-h-screen bg-[#050505] text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground">

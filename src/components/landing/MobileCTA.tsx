@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Zap } from 'lucide-react';
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Zap } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 export function MobileCTA() {
   const [isVisible, setIsVisible] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
-    const target = document.querySelector('#hero-cta-trigger');
+    const target = document.querySelector("#hero-cta-trigger");
     const handleVisibility = (isHeroVisible: boolean) => {
       setIsVisible(!isHeroVisible);
     };
-    if (target && 'IntersectionObserver' in window) {
+    if (target && "IntersectionObserver" in window) {
       observerRef.current = new IntersectionObserver(
         ([entry]) => handleVisibility(entry.isIntersecting),
-        { threshold: 0, rootMargin: '0px 0px -100px 0px' }
+        { threshold: 0, rootMargin: "0px 0px -100px 0px" },
       );
       observerRef.current.observe(target);
     } else {
       // Fallback scroll listener
       const handleScroll = () => setIsVisible(window.scrollY > 800);
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
     }
     return () => {
       if (observerRef.current) {
@@ -40,7 +40,7 @@ export function MobileCTA() {
             type: "spring",
             damping: 20,
             stiffness: 150,
-            mass: 0.6
+            mass: 0.6,
           }}
           className="fixed bottom-6 left-4 right-4 z-[999] md:hidden"
         >
@@ -51,7 +51,9 @@ export function MobileCTA() {
                 <Zap className="w-3 h-3 fill-primary animate-pulse" />
                 Waitlist Live
               </span>
-              <span className="text-sm font-black text-white tracking-tight">Join Early Access</span>
+              <span className="text-sm font-black text-white tracking-tight">
+                Join Early Access
+              </span>
             </div>
             <Button
               size="lg"

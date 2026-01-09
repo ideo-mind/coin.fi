@@ -99,7 +99,7 @@ const hasRelevantSourceInStack = (stack?: string): boolean => {
   if (!stack) return false;
   const lines = stack.split("\n");
   const hasSourceFiles = lines.some((line) =>
-    SOURCE_FILE_PATTERNS.some((pat) => pat.test(line))
+    SOURCE_FILE_PATTERNS.some((pat) => pat.test(line)),
   );
   if (hasSourceFiles) return true;
 
@@ -107,7 +107,7 @@ const hasRelevantSourceInStack = (stack?: string): boolean => {
     (line) =>
       line.trim() === "" ||
       line.includes("Error") ||
-      VENDOR_PATTERNS.some((pat) => pat.test(line))
+      VENDOR_PATTERNS.some((pat) => pat.test(line)),
   );
   return !isAllVendor;
 };
@@ -148,13 +148,13 @@ class GlobalErrorDeduplication {
       .split("\n")
       .some(
         (line) =>
-          /\.tsx?$/.test(line) || /\.jsx?$/.test(line) || /\/src\//.test(line)
+          /\.tsx?$/.test(line) || /\.jsx?$/.test(line) || /\/src\//.test(line),
       );
   }
 
   private isHigherPrecedence(
     newPrec: ErrorPrecedence,
-    existingPrec: ErrorPrecedence
+    existingPrec: ErrorPrecedence,
   ): boolean {
     // Prefer errors with source code
     if (newPrec.hasSourceCode !== existingPrec.hasSourceCode) {
@@ -208,7 +208,7 @@ class GlobalErrorDeduplication {
 
   shouldReport(
     context: ErrorContext,
-    immediate = false
+    immediate = false,
   ): { shouldReport: boolean; reason?: string } {
     this.maybeCleanup();
 
@@ -374,7 +374,7 @@ class ErrorReporter {
   private createConsoleInterceptor(
     method: ConsoleMethod,
     original: ConsoleNative,
-    prefix: string
+    prefix: string,
   ) {
     return (...args: ConsoleArgs) => {
       // Call original first
@@ -429,12 +429,12 @@ class ErrorReporter {
     console.error = this.createConsoleInterceptor(
       "error",
       this.originalConsoleError!,
-      CONSOLE_ERROR_PREFIX
+      CONSOLE_ERROR_PREFIX,
     );
     console.warn = this.createConsoleInterceptor(
       "warn",
       this.originalConsoleWarn!,
-      WARNING_PREFIX
+      WARNING_PREFIX,
     );
   }
 
@@ -446,7 +446,7 @@ class ErrorReporter {
   }
 
   private createErrorPayload(
-    data: Partial<ErrorReport> & { message: string }
+    data: Partial<ErrorReport> & { message: string },
   ): ErrorReport {
     const baseData = this.createBaseErrorData();
     return {
@@ -497,7 +497,7 @@ class ErrorReporter {
     // Use global deduplication to handle precedence and avoid duplicates
     const deduplicationResult = globalDeduplication.shouldReport(
       context,
-      false
+      false,
     );
     if (!deduplicationResult.shouldReport)
       return { shouldReport: false, reason: deduplicationResult.reason };
@@ -520,7 +520,7 @@ class ErrorReporter {
 
         // Look for React component patterns in source files
         const componentMatch = line.match(
-          /at (\w+) \(.*?\/src\/(.*?):(\d+):(\d+)\)/
+          /at (\w+) \(.*?\/src\/(.*?):(\d+):(\d+)\)/,
         );
         if (componentMatch) {
           const [, componentName, filePath, lineNum, colNum] = componentMatch;
@@ -605,7 +605,7 @@ class ErrorReporter {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to report error: ${response.status} ${response.statusText}`
+          `Failed to report error: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -620,7 +620,7 @@ class ErrorReporter {
 
       console.log(
         "[ErrorReporter] Error reported successfully:",
-        error.message
+        error.message,
       );
     } catch (err) {
       console.error("[ErrorReporter] Failed to send error:", err);
@@ -647,8 +647,8 @@ const formatConsoleArgs = (args: unknown[]): string => {
       typeof arg === "string"
         ? arg
         : typeof arg === "object" && arg
-        ? JSON.stringify(arg, null, 2)
-        : String(arg)
+          ? JSON.stringify(arg, null, 2)
+          : String(arg),
     )
     .join(" ");
 };
@@ -660,7 +660,7 @@ type ImmediatePayload = Pick<
 
 const createImmediateErrorPayload = (
   message: string,
-  level: "warning" | "error"
+  level: "warning" | "error",
 ): ImmediatePayload => ({
   message,
   stack: new Error().stack,
@@ -705,7 +705,9 @@ const shouldReportImmediate = (context: ErrorContext): boolean => {
         .split("\n")
         .some(
           (line) =>
-            /\.tsx?$/.test(line) || /\.jsx?$/.test(line) || /\/src\//.test(line)
+            /\.tsx?$/.test(line) ||
+            /\.jsx?$/.test(line) ||
+            /\/src\//.test(line),
         )
     : false;
 
@@ -740,12 +742,13 @@ if (typeof window !== "undefined") {
   const originalError = console.error;
 
   // Create shared interceptor logic following DRY principles
-  const createImmediateInterceptor = (
-    original: ConsoleNative,
-    prefix: string,
-    defaultLevel: "warning" | "error"
-  ) =>
-    function (...args: unknown[]) {
+  const createImmediateInterceptor =
+    (
+      original: ConsoleNative,
+      prefix: string,
+      defaultLevel: "warning" | "error",
+    ) =>
+    (...args: unknown[]) => {
       original.apply(console, args);
 
       try {
@@ -772,13 +775,13 @@ if (typeof window !== "undefined") {
   console.warn = createImmediateInterceptor(
     originalWarn,
     "[WARNING]",
-    "warning"
+    "warning",
   ) as WrappedConsoleFn;
   (console.warn as WrappedConsoleFn).__errorReporterWrapped = true;
   console.error = createImmediateInterceptor(
     originalError,
     "[CONSOLE ERROR]",
-    "error"
+    "error",
   ) as WrappedConsoleFn;
   (console.error as WrappedConsoleFn).__errorReporterWrapped = true;
 }

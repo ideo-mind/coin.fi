@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { errorReporter } from "@/lib/errorReporter";
 import { ErrorFallback } from "./ErrorFallback";
 
@@ -7,7 +7,7 @@ interface Props {
   fallback?: (
     error: Error,
     errorInfo: ErrorInfo,
-    retry: () => void
+    retry: () => void,
   ) => ReactNode;
 }
 
@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback(
           this.state.error,
           this.state.errorInfo!,
-          this.retry
+          this.retry,
         );
       }
 
