@@ -34,21 +34,22 @@ export function PricingAndFAQ() {
     <div className="py-24 space-y-32">
       <section id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl font-black">Simple, Transparent <span className="text-gradient">Pricing</span></h2>
-          <p className="text-muted-foreground font-medium">Choose the plan that fits your journey into web3.</p>
+          <h2 className="text-4xl md:text-5xl font-black">Simple, Transparent <span className="text-gradient">Pricing</span></h2>
+          <p className="text-muted-foreground font-medium text-lg">Choose the plan that fits your journey into web3.</p>
         </div>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
           {plans.map((plan) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -5 }}
               viewport={{ once: true }}
               className={cn(
-                "relative p-8 rounded-3xl border transition-all duration-300",
-                plan.popular 
-                  ? "border-primary/50 bg-primary/5 shadow-glow-lg scale-105 z-10" 
-                  : "border-zinc-800 bg-zinc-900/40"
+                "relative p-8 rounded-4xl border transition-all duration-300",
+                plan.popular
+                  ? "border-primary/50 bg-primary/5 shadow-glow-lg scale-105 z-10"
+                  : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
               )}
             >
               {plan.popular && (
@@ -65,7 +66,7 @@ export function PricingAndFAQ() {
                   <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
                   {plan.sub && <span className="text-muted-foreground font-medium">{plan.sub}</span>}
                 </div>
-                <ul className="space-y-4 pt-2">
+                <ul className="space-y-4 pt-4 border-t border-zinc-800/50">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-3 text-sm font-medium">
                       <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -75,9 +76,11 @@ export function PricingAndFAQ() {
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  className="w-full h-14 text-lg font-bold rounded-2xl transition-transform active:scale-95" 
-                  variant={plan.popular ? 'default' : 'outline'}
+                <Button
+                  className={cn(
+                    "w-full h-14 text-lg font-bold rounded-2xl transition-all active:scale-95",
+                    plan.popular ? "btn-gradient border-none" : "bg-transparent border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white"
+                  )}
                   asChild
                 >
                   <a href="#waitlist">{plan.cta}</a>
@@ -91,11 +94,11 @@ export function PricingAndFAQ() {
         <h2 className="text-3xl sm:text-4xl font-black text-center">Frequently Asked <span className="text-gradient">Questions</span></h2>
         <Accordion type="single" collapsible className="w-full space-y-4">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border-zinc-800 bg-zinc-900/20 rounded-2xl px-6">
-              <AccordionTrigger className="text-left font-bold text-lg hover:text-primary transition-colors hover:no-underline py-6">
+            <AccordionItem key={i} value={`item-${i}`} className="border-zinc-800/50 bg-zinc-900/10 rounded-3xl px-6 transition-colors hover:bg-zinc-900/20">
+              <AccordionTrigger className="text-left font-bold text-lg hover:text-primary transition-all hover:no-underline py-6">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-zinc-400 font-medium leading-relaxed pb-6">
+              <AccordionContent className="text-zinc-400 font-medium text-base leading-relaxed pb-6">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>

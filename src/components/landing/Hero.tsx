@@ -58,13 +58,11 @@ export function Hero() {
   }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return toast.error("Email address is required to proceed.");
-    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email address.");
-    if (platforms.length === 0) return toast.error("Please select at least one platform.");
+    if (!email) return toast.error("Email address is required.");
+    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Invalid email address.");
+    if (platforms.length === 0) return toast.error("Select at least one platform.");
     setLoading(true);
     try {
-      // Transition from FormData to JSON payload
-      // Platforms are sent as a comma-separated string per requirements
       const payload = {
         email: email,
         platforms: platforms.join(', ') || ''
@@ -73,35 +71,16 @@ export function Hero() {
         method: 'POST',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'text/plain;charset=utf-8', // Using text/plain to avoid CORS preflight issues with some GAS setups
         },
         body: JSON.stringify(payload)
       });
-      // Handle structured JSON response from backend
-      if (response.ok || response.type === 'opaque') {
-        // Since Google Apps Script often redirects or returns 200 with opaque status in some configurations,
-        // we check for standard success if cors allowed parsing.
-        try {
-          const result = await response.json();
-          if (result && result.success === false) {
-            throw new Error(result.message || "Submission failed");
-          }
-        } catch (parseError) {
-          // If response isn't JSON but status was OK (like opaque or simple text), we treat as success
-          console.debug("Non-JSON or Opaque response received, assuming success based on status.");
-        }
-        toast.success("Welcome pioneer! You're on the list.");
-        setEmail('');
-        // Refresh the count to reflect new sign-up
-        setTimeout(() => fetchCount(), 2500);
-      } else {
-        throw new Error("Server returned an error");
-      }
+      toast.success("Welcome pioneer! You're on the list.");
+      setEmail('');
+      setTimeout(() => fetchCount(), 2500);
     } catch (err) {
       console.error('[WAITLIST SUBMIT ERROR]', err);
-      const errorMessage = err instanceof Error ? err.message : "Could not connect to the waitlist service.";
-      toast.error(errorMessage);
+      toast.error("Waitlist currently busy. Please try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -123,12 +102,14 @@ export function Hero() {
               <Zap className="w-3.5 h-3.5 fill-primary animate-pulse shrink-0" />
               <span className="leading-none">Unlimited Gas Sponsorship</span>
             </div>
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-white">
-              Wallet <span className="text-gradient">Zero</span> Gas.
-            </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
-              Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
-            </p>
+            <div className="space-y-4">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-white">
+                Wallet <span className="text-gradient">Zero</span> Gas.
+              </h1>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+                Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
+              </p>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
               <div className="flex flex-col sm:flex-row gap-3" ref={buttonRef}>
                 <Input
@@ -136,7 +117,7 @@ export function Hero() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
+                  className="flex-1 bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
                   disabled={loading}
                 />
                 <Button
@@ -170,7 +151,7 @@ export function Hero() {
                 </div>
               </div>
             </form>
-            <div className="flex items-center gap-3 min-h-[24px]">
+            <div className="flex items-center gap-3 pt-4 min-h-[32px]">
               {isCountLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -201,11 +182,11 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-[#f38020]/20 flex items-center justify-center shadow-glow shadow-[#f38020]/10 overflow-hidden">
+                <div className="h-14 w-14 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/20 overflow-hidden">
                   <img
                     src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
                     alt="Coin Fi App"
-                    className="w-10 h-10 object-contain brightness-110"
+                    className="w-10 h-10 object-contain brightness-0"
                   />
                 </div>
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">

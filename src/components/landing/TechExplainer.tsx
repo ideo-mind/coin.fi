@@ -26,7 +26,7 @@ export function TechExplainer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-4xl md:text-5xl font-black">The Tech Behind <span className="text-primary">0 Gas</span></h2>
-          <p className="text-zinc-500 max-w-2xl mx-auto font-medium">Next-generation account abstraction infrastructure.</p>
+          <p className="text-zinc-500 max-w-2xl mx-auto font-medium text-lg">Next-generation account abstraction infrastructure.</p>
         </div>
         <Tabs defaultValue="bundler" onValueChange={setActiveStep} className="space-y-16">
           <div className="flex justify-center">
@@ -43,69 +43,78 @@ export function TechExplainer() {
             </TabsList>
           </div>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeStep}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="space-y-8"
-              >
-                <h3 className="text-4xl font-bold">{techData[activeStep as keyof typeof techData].title}</h3>
-                <p className="text-zinc-400 text-xl leading-relaxed">{techData[activeStep as keyof typeof techData].desc}</p>
-                <ul className="space-y-4">
-                  {techData[activeStep as keyof typeof techData].points.map((p, i) => (
-                    <li key={i} className="flex items-center gap-3 text-primary font-bold group">
-                      <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" /> {p}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            </AnimatePresence>
-            <div className="relative aspect-video bg-zinc-950 rounded-4xl border border-zinc-800 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg group">
-              <svg viewBox="0 0 400 200" className="w-full h-auto filter drop-shadow-primary">
+            <div className="min-h-[350px] flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStep}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="space-y-8"
+                >
+                  <h3 className="text-4xl font-black tracking-tight">{techData[activeStep as keyof typeof techData].title}</h3>
+                  <p className="text-zinc-400 text-xl leading-relaxed font-medium">{techData[activeStep as keyof typeof techData].desc}</p>
+                  <ul className="space-y-4">
+                    {techData[activeStep as keyof typeof techData].points.map((p, i) => (
+                      <li key={i} className="flex items-center gap-3 text-primary font-bold group">
+                        <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" /> {p}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="relative aspect-video bg-zinc-950 rounded-4xl border border-zinc-800/50 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg group">
+              <svg viewBox="0 0 400 200" className="w-full h-auto">
                 <defs>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                    <feMerge>
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
+                  <filter id="svgGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
+                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#7000ff" />
+                    <stop offset="100%" stopColor="#00f2ff" />
+                  </linearGradient>
                 </defs>
                 {/* Main Flow Paths */}
-                <path id="pathTop" d="M 40 60 Q 150 60 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
-                <path id="pathBottom" d="M 40 140 Q 150 140 200 100" stroke="#18181b" strokeWidth="2" fill="none" />
-                <path id="pathExit" d="M 200 100 H 360" stroke="#18181b" strokeWidth="2" fill="none" />
+                <path id="pathTop" d="M 40 60 Q 150 60 200 100" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
+                <path id="pathBottom" d="M 40 140 Q 150 140 200 100" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
+                <path id="pathExit" d="M 200 100 H 360" stroke="#18181b" strokeWidth="2" fill="none" strokeDasharray="4 4" />
                 {/* Nodes */}
-                <circle cx="40" cy="60" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
-                <circle cx="40" cy="140" r="12" fill="#050505" stroke="#7000ff" strokeWidth="2" />
-                <motion.rect x="180" y="80" width="40" height="40" rx="8" fill="#050505" stroke="#00f2ff" strokeWidth="2" animate={{ rotate: 360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} />
-                <circle cx="360" cy="100" r="15" fill="#050505" stroke="#00f2ff" strokeWidth="3" />
-                {/* Packet Particles - Native SVG Animation to avoid Framer Motion prop warnings */}
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <circle cx="40" cy="60" r="14" fill="#050505" stroke="#7000ff" strokeWidth="2" filter="url(#svgGlow)" />
+                <circle cx="40" cy="140" r="14" fill="#050505" stroke="#7000ff" strokeWidth="2" filter="url(#svgGlow)" />
+                <motion.rect 
+                  x="180" y="80" width="40" height="40" rx="10" 
+                  fill="#050505" stroke="#00f2ff" strokeWidth="2" 
+                  filter="url(#svgGlow)"
+                  animate={{ rotate: 360 }} 
+                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }} 
+                />
+                <circle cx="360" cy="100" r="18" fill="#050505" stroke="#00f2ff" strokeWidth="3" filter="url(#svgGlow)" />
+                {/* Packet Particles */}
+                {[0, 1, 2, 3].map((i) => (
                   <React.Fragment key={i}>
                     {/* Incoming Top */}
-                    <circle r="3" fill="#00f2ff" filter="url(#glow)" opacity="0">
-                      <animateMotion dur="2s" repeatCount="indefinite" begin={`${i * 0.45}s`}>
+                    <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="2.4s" repeatCount="indefinite" begin={`${i * 0.6}s`}>
                         <mpath href="#pathTop" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin={`${i * 0.45}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.4s" repeatCount="indefinite" begin={`${i * 0.6}s`} />
                     </circle>
                     {/* Incoming Bottom */}
-                    <circle r="3" fill="#00f2ff" filter="url(#glow)" opacity="0">
-                      <animateMotion dur="2.2s" repeatCount="indefinite" begin={`${i * 0.5}s`}>
+                    <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="2.6s" repeatCount="indefinite" begin={`${i * 0.7}s`}>
                         <mpath href="#pathBottom" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite" begin={`${i * 0.5}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.6s" repeatCount="indefinite" begin={`${i * 0.7}s`} />
                     </circle>
                     {/* Outgoing Unified */}
-                    <circle r="4" fill="#7000ff" filter="url(#glow)" opacity="0">
-                      <animateMotion dur="1.5s" repeatCount="indefinite" begin={`${i * 0.3}s`}>
+                    <circle r="5" fill="#7000ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="1.8s" repeatCount="indefinite" begin={`${i * 0.45}s`}>
                         <mpath href="#pathExit" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin={`${i * 0.3}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="1.8s" repeatCount="indefinite" begin={`${i * 0.45}s`} />
                     </circle>
                   </React.Fragment>
                 ))}
