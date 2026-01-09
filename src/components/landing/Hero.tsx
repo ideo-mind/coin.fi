@@ -7,7 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, ShieldCheck, ArrowRight, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = 'https://script.google.com/macros/s/AKfycbxxBGpTztDnA0Pi7ycv7AP4PMxru6Oaw64kHz-JdKaCl6XkxWTBh4LQCrPZb5hunR7_/exec';
+// Production API Endpoint Synchronization
+const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbzW3zcBlEZOoLJCymFh8M2ZBG13BSN7lcNF3pcQ_jkxKZ6DN5taYwSd_GG_zo-GI2QI/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 const FALLBACK_COUNT = 12540; // Plausible seeded baseline for social proof if API fails
 export function Hero() {
@@ -76,7 +77,7 @@ export function Hero() {
     const controller = new AbortController();
     fetchCount(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [fetchCount]);
   const handleSubmit = async (e: React.FormEvent, isRetry = false) => {
     e.preventDefault();
     if (!email) return toast.error("Email address is required.");
@@ -201,10 +202,10 @@ export function Hero() {
             <div className="flex items-center gap-3 pt-4 min-h-[40px]">
               <AnimatePresence mode="wait">
                 {isCountLoading && !count ? (
-                  <motion.div 
+                  <motion.div
                     key="loading"
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className="flex items-center gap-2"
                   >
@@ -212,10 +213,10 @@ export function Hero() {
                     <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Verifying pioneers...</span>
                   </motion.div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     key="count"
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-3"
                   >
                     <div className="flex -space-x-2">
