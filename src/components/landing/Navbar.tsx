@@ -8,7 +8,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   const navLinks = [
@@ -23,15 +23,17 @@ export function Navbar() {
   return (
     <nav className={cn(
       "fixed top-0 w-full z-50 transition-all duration-300 border-b",
-      scrolled ? "bg-background/80 backdrop-blur-md border-zinc-800 py-3" : "bg-transparent border-transparent py-5"
+      scrolled 
+        ? "bg-background/80 backdrop-blur-md border-zinc-800/60 py-3 shadow-sm" 
+        : "bg-transparent border-transparent py-5"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-[#f38020] p-1 rounded-lg shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0">
+        <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0 ring-1 ring-white/10 transition-transform group-hover:scale-105">
             <img
               src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
               alt="Coin Fi"
-              className="w-8 h-8 object-contain brightness-0"
+              className="w-7 h-7 object-contain brightness-0"
             />
           </div>
           <span className="text-xl font-black tracking-tight text-white">Coin Fi</span>
@@ -42,12 +44,12 @@ export function Navbar() {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-bold text-zinc-400 hover:text-primary transition-colors"
+              className="text-sm font-bold text-zinc-400 hover:text-primary transition-all duration-200"
             >
               {link.name}
             </a>
           ))}
-          <Button size="sm" className="font-bold rounded-xl px-6 shadow-glow transition-transform active:scale-95" asChild>
+          <Button size="sm" className="font-bold rounded-xl px-6 shadow-glow transition-all active:scale-95 hover:scale-105" asChild>
             <a href="#waitlist">Join Waitlist</a>
           </Button>
         </div>
@@ -55,24 +57,34 @@ export function Navbar() {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-zinc-900">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-zinc-900 rounded-xl">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] bg-zinc-950 border-zinc-800">
+            <SheetContent side="right" className="w-[300px] bg-zinc-950 border-zinc-800 p-8">
               <div className="flex flex-col gap-8 mt-12">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20">
+                    <img
+                      src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
+                      alt="Coin Fi"
+                      className="w-6 h-6 brightness-0"
+                    />
+                  </div>
+                  <span className="text-xl font-black text-white">Coin Fi</span>
+                </div>
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.href}
                     onClick={handleMobileLinkClick}
-                    className="text-2xl font-black text-white hover:text-primary transition-colors"
+                    className="text-2xl font-black text-white hover:text-primary transition-colors border-b border-zinc-900 pb-2"
                   >
                     {link.name}
                   </a>
                 ))}
                 <Button
-                  className="w-full h-14 text-lg font-black rounded-2xl mt-4 shadow-glow"
+                  className="w-full h-14 text-lg font-black rounded-2xl mt-4 shadow-glow transition-transform active:scale-95"
                   onClick={handleMobileLinkClick}
                   asChild
                 >

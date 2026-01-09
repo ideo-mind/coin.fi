@@ -16,7 +16,6 @@ export function Hero() {
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [isCountLoading, setIsCountLoading] = useState(true);
-  // Ref to track count without triggering re-renders in the dependency chain
   const countRef = useRef<number | null>(null);
   const { ref: sectionRef, inView } = useInView({
     triggerOnce: true,
@@ -26,7 +25,6 @@ export function Hero() {
     threshold: 0,
   });
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
-    // Only show loading if we don't have a count yet to prevent flicker on refresh
     if (countRef.current === null) {
       setIsCountLoading(true);
     }
@@ -59,7 +57,6 @@ export function Hero() {
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('[Hero] Count fetch error:', err);
         if (countRef.current === null) {
           setCount(FALLBACK_COUNT);
           countRef.current = FALLBACK_COUNT;
@@ -69,7 +66,7 @@ export function Hero() {
       clearTimeout(timeoutId);
       setIsCountLoading(false);
     }
-  }, []); // Empty dependencies because we use countRef
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     fetchCount(controller.signal);
@@ -80,6 +77,7 @@ export function Hero() {
     if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email.");
     if (platforms.length === 0) return toast.error("Please select a platform.");
     setLoading(true);
+    const toastId = toast.loading("Reserving your spot...");
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -93,17 +91,14 @@ export function Hero() {
         })
       });
       if (response.ok) {
-        toast.success("Welcome aboard! Check your email for next steps.");
+        toast.success("Welcome aboard! Check your email for next steps.", { id: toastId });
         setEmail('');
-        // Re-fetch count after successful signup to show progress
         setTimeout(() => fetchCount(), 2000);
       } else {
-        const errorText = await response.text();
-        throw new Error(`Submission failed: ${errorText}`);
+        throw new Error("Submission failed");
       }
     } catch (err) {
-      console.error('[Hero] Waitlist submission error:', err);
-      toast.error("Network error. We've queued your request.");
+      toast.error("Network error. We've queued your request.", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -143,7 +138,7 @@ export function Hero() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95"
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 shrink-0"
                 >
                   {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : "Access"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -216,12 +211,14 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/20">
-                  <img
-                    src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
-                    alt="Coin Fi"
-                    className="w-10 h-10 brightness-0"
-                  />
+                <div className="flex justify-center">
+                  <div className="h-16 w-16 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/40 ring-1 ring-white/20">
+                    <img
+                      src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
+                      alt="Coin Fi"
+                      className="w-10 h-10 brightness-0"
+                    />
+                  </div>
                 </div>
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">
                   <div className="flex justify-between items-center">
