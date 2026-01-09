@@ -107,22 +107,53 @@ export function Hero() {
         })
       });
       const text = await response.text();
-      if (!response.ok) throw new Error("Server communication failed.");
+      const logData = {
+        url: API_URL,
+        method: 'POST',
+        status: response.status,
+        statusText: response.statusText,
+        headersPreview: Object.fromEntries([...Array.from(response.headers.entries()).slice(0, 10)]),
+        bodyPreview: text.slice(0, 200)
+      };
+      if (!response.ok) {
+        console.error('[Hero] Waitlist HTTP error:', logData);
+        toast.error(`Server error (${response.status}). Please try again.`, { id: toastId });
+        return;
+      }
+      let parsed: any;
       try {
-        const parsed = JSON.parse(text);
-        if (parsed && parsed.error) throw new Error(parsed.error);
-      } catch (e) {
-        // If it's not JSON, we treat non-error text as success
+        parsed = JSON.parse(text);
+      } catch {/* Non-JSON 200 responses treated as success (GAS tolerant) */}
+      if (parsed?.error) {
+        console.error('[Hero] Waitlist GAS error:', { ...logData, parsedError: parsed.error });
+        toast.error(
+          typeof parsed.error === 'string' && parsed.error 
+            ? parsed.error 
+            : 'Server rejected submission. Please try again.',
+          { id: toastId }
+        );
+        return;
       }
       toast.success("Welcome aboard! You're officially on the list.", { id: toastId });
       setEmail('');
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
-      console.error('[Hero] Waitlist error:', err);
-      toast.error("Connectivity issue. We've noted your request—please try again later.", { 
-        id: toastId,
-        icon: <AlertCircle className="w-5 h-5 text-destructive" />
-      });
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('[Hero] Waitlist network error:', { 
+          url: API_URL, 
+          method: 'POST', 
+          timestamp: new Date().toISOString(), 
+          error: { 
+            name: err.name, 
+            message: err.message, 
+            stack: err.stack 
+          } 
+        });
+        toast.error('Connectivity issue. We\'ve noted your request—please try again later.', {
+          id: toastId,
+          icon: <AlertCircle className="w-5 h-5 text-destructive" />
+        });
+      }
     } finally {
       setLoading(false);
     }
