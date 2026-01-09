@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = 'https://script.google.com/macros/s/AKfycbxxQ7TN7qwyvKey9IIpTFEtrAW-Tfw6IwnViwUK5Qmh70oj8Gg0ajdx_eevACl3gt31/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxxBGpTztDnA0Pi7ycv7AP4PMxru6Oaw64kHz-JdKaCl6XkxWTBh4LQCrPZb5hunR7_/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
@@ -25,6 +25,7 @@ export function Hero() {
   const fetchCount = async (signal?: AbortSignal) => {
     setIsCountLoading(true);
     try {
+      // AppScript GET usually returns count or general info
       const res = await fetch(API_URL, {
         signal,
         mode: 'cors',
@@ -36,16 +37,30 @@ export function Hero() {
         try {
           json = JSON.parse(text);
         } catch (e) {
+          // If not JSON, maybe it's a raw number?
+          const num = parseInt(text.trim());
+          if (!isNaN(num)) {
+            setCount(num);
+            return;
+          }
           return;
         }
-        const pioneerCount = json?.count ?? json?.data?.count ?? json?.data?.total ?? json?.total ?? 0;
+        // Deep check for count in various common AppScript response patterns
+        const pioneerCount = 
+          json?.count ?? 
+          json?.data?.count ?? 
+          json?.data?.total ?? 
+          json?.total ?? 
+          (json?.result === 'success' ? json?.data : null) ??
+          0;
         if (typeof pioneerCount === 'number' || !isNaN(Number(pioneerCount))) {
           setCount(Number(pioneerCount));
         }
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        setCount(0);
+        console.warn('[COUNT FETCH ERROR]', err.message);
+        // Don't set error state to avoid breaking UI, just keep previous count or null
       }
     } finally {
       setIsCountLoading(false);
@@ -58,60 +73,66 @@ export function Hero() {
   }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validation
     if (!email) return toast.error("Email address is required.");
     if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Invalid email address.");
     if (platforms.length === 0) return toast.error("Select at least one platform.");
     setLoading(true);
+    // Deep debug logging for payload
+    const payload = {
+      email: email.trim(),
+      platforms: platforms.join(', '),
+      source: 'landing_hero',
+      timestamp: new Date().toISOString()
+    };
+    console.log('[WAITLIST SUBMIT START]', { url: API_URL, payload });
     try {
-      const payload = {
-        email: email,
-        platforms: platforms.join(', ') || ''
-      };
-      console.log('[WAITLIST POST]', {url: API_URL, payload});
+      // Google Apps Script requires 'text/plain' to avoid CORS preflight issues in some configurations
       const response = await fetch(API_URL, {
         method: 'POST',
         mode: 'cors',
         headers: {
-          'Content-Type': 'text/plain',
+          'Content-Type': 'text/plain;charset=utf-8',
         },
         body: JSON.stringify(payload)
       });
-      
       const responseText = await response.text();
-      console.log('[WAITLIST POST RESPONSE]', {
+      console.log('[WAITLIST RESPONSE RAW]', {
         status: response.status,
-        statusText: response.statusText,
-        textPreview: responseText.slice(0, 200)
+        text: responseText
       });
-      
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(`Server responded with ${response.status}`);
       }
-      
-      let success = false;
+      // Flexible Success Validation (Handles JSON and Raw Text)
+      let isSuccess = false;
+      let serverMessage = "";
       try {
         const json = JSON.parse(responseText);
-        success = json?.success || json?.ok;
-      } catch {
-        success = responseText.toLowerCase().includes('success') || responseText.toLowerCase().includes('ok');
+        // Check multiple success indicators
+        isSuccess = 
+          json?.success === true || 
+          json?.result === 'success' || 
+          json?.status === 'success' || 
+          json?.ok === true;
+        serverMessage = json?.message || json?.error || "";
+      } catch (e) {
+        // Fallback: String matching if response is not valid JSON
+        const lowerText = responseText.toLowerCase();
+        isSuccess = lowerText.includes('success') || lowerText.includes('"ok"') || lowerText.includes('true');
       }
-      
-      if (success) {
+      if (isSuccess) {
         toast.success("Welcome pioneer! You're on the list.");
         setEmail('');
-        setTimeout(() => fetchCount(), 2500);
+        // Refresh count after a short delay to allow backend to update
+        setTimeout(() => fetchCount(), 3000);
       } else {
-        throw new Error(responseText.slice(0, 100) || 'Unknown error');
+        throw new Error(serverMessage || "The server couldn't process your request.");
       }
     } catch (err) {
-      const errorMsg = err instanceof Error 
-        ? `${err.name}: ${err.message}` 
-        : String(err);
-      console.error('[WAITLIST SUBMIT ERROR]', { 
-        errorMsg, 
-        stack: err instanceof Error ? err.stack : undefined 
-      });
-      toast.error(`Failed to submit: ${errorMsg}`);
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error('[WAITLIST SUBMIT FAILED]', err);
+      toast.error(`Submission failed: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -150,11 +171,12 @@ export function Hero() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="flex-1 bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
                   disabled={loading}
+                  required
                 />
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95"
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 disabled:opacity-70"
                 >
                   {loading ? "..." : "Access"}
                   <ArrowRight className="w-5 h-5 ml-2" />
