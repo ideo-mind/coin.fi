@@ -107,18 +107,40 @@ export function Hero() {
       });
       const text = await response.text();
       if (!response.ok) {
-        toast.error(`Server error (${response.status}). Please try again.`, { id: toastId });
+        const errorSnippet = text.slice(0, 100);
+        toast.error(`Server Error ${response.status}: ${errorSnippet || 'Unknown response'}`, { id: toastId });
+        setLoading(false);
         return;
       }
+      // If response is OK, try to parse JSON
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        // Fallback for non-JSON success text responses
+        data = { success: true };
+      }
+      if (data.error || data.success === false) {
+        toast.error(data.error || data.message || "The server rejected this request.", { id: toastId });
+        setLoading(false);
+        return;
+      }
+      // Absolute Success Flow
       toast.success("Welcome aboard! You're officially on the list.", { id: toastId });
       setEmail('');
+      setPlatforms([]);
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        toast.error('Connectivity issue. We\'ve noted your request—please try again later.', {
-          id: toastId,
-          icon: <AlertCircle className="w-5 h-5 text-destructive" />
-        });
+      // Catch only network/connectivity issues or unexpected script crashes
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          // Request was cancelled, do nothing or minimal feedback
+        } else {
+          toast.error("Connectivity issue. Please check your internet or try again later.", {
+            id: toastId,
+            icon: <AlertCircle className="w-5 h-5 text-destructive" />
+          });
+        }
       }
     } finally {
       setLoading(false);
