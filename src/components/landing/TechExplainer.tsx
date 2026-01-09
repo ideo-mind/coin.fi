@@ -60,10 +60,15 @@ export function TechExplainer() {
               </AnimatePresence>
             </div>
             <div className="relative aspect-video bg-zinc-950 rounded-[2.5rem] border border-zinc-800/50 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg">
-              <svg viewBox="0 0 400 200" className="w-full h-auto">
+              <svg 
+                viewBox="0 0 400 200" 
+                className="w-full h-auto will-change-transform"
+                aria-label="Interactive infrastructure diagram showing transaction bundling and verification"
+                role="img"
+              >
                 <defs>
                   <filter id="svgGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feGaussianBlur stdDeviation="2.5" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                 </defs>
@@ -77,28 +82,31 @@ export function TechExplainer() {
                   fill="#050505" stroke="#00f2ff" strokeWidth="2"
                   filter="url(#svgGlow)"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
                 />
                 <circle cx="360" cy="100" r="18" fill="#050505" stroke="#00f2ff" strokeWidth="3" filter="url(#svgGlow)" />
                 {[0, 1, 2].map((i) => (
                   <React.Fragment key={i}>
+                    {/* Top Path Packets */}
                     <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="3s" repeatCount="indefinite" begin={`${i * 1}s`}>
+                      <animateMotion dur="4s" repeatCount="indefinite" begin={`${i * 1.3}s`}>
                         <mpath href="#pathTop" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="3s" repeatCount="indefinite" begin={`${i * 1}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4s" repeatCount="indefinite" begin={`${i * 1.3}s`} />
                     </circle>
+                    {/* Bottom Path Packets */}
                     <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`}>
+                      <animateMotion dur="4.5s" repeatCount="indefinite" begin={`${i * 1.5}s`}>
                         <mpath href="#pathBottom" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4.5s" repeatCount="indefinite" begin={`${i * 1.5}s`} />
                     </circle>
+                    {/* Exit Path Packets */}
                     <circle r="5" fill="#7000ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="2s" repeatCount="indefinite" begin={`${i * 0.7}s`}>
+                      <animateMotion dur="2.5s" repeatCount="indefinite" begin={`${i * 0.8}s`}>
                         <mpath href="#pathExit" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2s" repeatCount="indefinite" begin={`${i * 0.7}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" repeatCount="indefinite" begin={`${i * 0.8}s`} />
                     </circle>
                   </React.Fragment>
                 ))}

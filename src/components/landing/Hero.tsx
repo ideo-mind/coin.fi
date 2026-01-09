@@ -5,14 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Zap, ArrowRight, RefreshCcw } from 'lucide-react';
+import { Zap, ArrowRight, RefreshCcw, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMAvL5Eyhbfs9aoyUhKi2RZvNXvkYXTxXtxDQ7LlpbrL5XuD3jv1j92lXHFRx6G5Dk/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 const FALLBACK_COUNT = 12540;
 export function Hero() {
   const [email, setEmail] = useState('');
-  // Initialize with empty array for Phase 24 requirement
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
@@ -25,7 +24,6 @@ export function Hero() {
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
-  // Intelligent OS Detection for Platform Pre-selection
   useEffect(() => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
@@ -35,7 +33,6 @@ export function Hero() {
     } else if (isAndroid) {
       setPlatforms(['Android']);
     } else {
-      // For desktop or others, we keep it empty by default as per requirements
       setPlatforms([]);
     }
   }, []);
@@ -89,10 +86,14 @@ export function Hero() {
   }, [fetchCount]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email.");
-    if (platforms.length === 0) return toast.error("Please select a platform.");
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      return toast.error("Please enter a valid email address.");
+    }
+    if (platforms.length === 0) {
+      return toast.error("Please select at least one platform.");
+    }
     setLoading(true);
-    const toastId = toast.loading("Reserving your spot...");
+    const toastId = toast.loading("Reserving your spot in the future of DeFi...");
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -106,33 +107,22 @@ export function Hero() {
         })
       });
       const text = await response.text();
-      if (!response.ok) {
-        console.error('[Hero] Waitlist server error:', {
-          status: response.status,
-          statusText: response.statusText,
-          bodyPreview: text.slice(0, 300)
-        });
-        throw new Error("Submission failed");
-      }
+      if (!response.ok) throw new Error("Server communication failed.");
       try {
         const parsed = JSON.parse(text);
-        if (parsed && parsed.error) {
-          console.error('[Hero] GAS error:', parsed.error);
-          throw new Error(parsed.error);
-        }
-      } catch {
-        // Assume success if text isn't JSON
+        if (parsed && parsed.error) throw new Error(parsed.error);
+      } catch (e) {
+        // If it's not JSON, we treat non-error text as success
       }
-      toast.success("Welcome aboard! Check your email for next steps.", { id: toastId });
+      toast.success("Welcome aboard! You're officially on the list.", { id: toastId });
       setEmail('');
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
-      console.error('[Hero] Waitlist submission error:', {
-        name: err instanceof Error ? err.name : 'Unknown',
-        message: err instanceof Error ? err.message : String(err),
-        timestamp: new Date().toISOString()
+      console.error('[Hero] Waitlist error:', err);
+      toast.error("Connectivity issue. We've noted your request—please try again later.", { 
+        id: toastId,
+        icon: <AlertCircle className="w-5 h-5 text-destructive" />
       });
-      toast.error("Network error. We've queued your request.", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -172,14 +162,14 @@ export function Hero() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 shrink-0"
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 shrink-0 whitespace-nowrap"
                 >
-                  {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : "Access"}
+                  {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : "Early Access"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
               </div>
-              <div className="p-5 rounded-3xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm">
-                <div className="grid grid-cols-2 gap-y-4 gap-x-2">
+              <div className="p-4 sm:p-5 rounded-3xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-4">
                   {PLATFORMS.map((p) => (
                     <div key={p} className="flex items-center space-x-3 group">
                       <Checkbox
@@ -188,11 +178,11 @@ export function Hero() {
                         onCheckedChange={(checked) => {
                           setPlatforms(prev => checked ? [...prev, p] : prev.filter(x => x !== p));
                         }}
-                        className="data-[state=checked]:bg-primary"
+                        className="data-[state=checked]:bg-primary shrink-0"
                       />
                       <Label
                         htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
-                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer flex-1 py-1"
+                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer flex-1 py-1 truncate"
                       >
                         {p}
                       </Label>
@@ -201,7 +191,7 @@ export function Hero() {
                 </div>
               </div>
             </form>
-            <div className="flex items-center gap-3 pt-4 min-h-[40px]">
+            <div className="flex items-center gap-3 pt-4 min-h-[44px]">
               <AnimatePresence mode="wait">
                 {isCountLoading && !count ? (
                   <motion.div
@@ -209,25 +199,25 @@ export function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-3 w-64"
                   >
-                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Verifying network status...</span>
+                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin shrink-0" />
+                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest whitespace-nowrap">Verifying network...</span>
                   </motion.div>
                 ) : (
                   <motion.div
                     key="count"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-3"
+                    className="flex items-center gap-3 w-full max-w-xs"
                   >
-                    <div className="flex -space-x-2">
+                    <div className="flex -space-x-2 shrink-0">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow" />
+                        <div key={i} className="w-7 h-7 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow ring-1 ring-white/10" />
                       ))}
                     </div>
-                    <span className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">{(count ?? FALLBACK_COUNT).toLocaleString()}</strong> pioneers joined
+                    <span className="text-sm text-muted-foreground font-medium">
+                      <strong className="text-foreground font-black">{(count ?? FALLBACK_COUNT).toLocaleString()}</strong> pioneers joined
                     </span>
                   </motion.div>
                 )}

@@ -35,10 +35,26 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     background: #050505;
   }
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #050505;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #252525;
+  }
 }
 @layer components {
   .text-gradient {
-    @apply bg-gradient-to-r from-[#00f2ff] to-[#7000ff] bg-clip-text text-transparent font-bold;
+    @apply bg-gradient-to-r from-[#00f2ff] via-[#3d7aff] to-[#7000ff] bg-clip-text text-transparent font-black tracking-tight;
+    /* High legibility shadow filter */
+    filter: drop-shadow(0 0 1px rgba(0, 242, 255, 0.1));
   }
   .glass {
     @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
@@ -52,5 +68,11 @@
   .btn-gradient {
     @apply inline-flex items-center justify-center px-8 py-3 rounded-full font-bold text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-glow;
     background: linear-gradient(135deg, #00f2ff 0%, #7000ff 100%);
+  }
+  .shadow-glow-xl {
+    box-shadow: 0 0 60px -15px rgba(0, 242, 255, 0.4), 0 0 30px -10px rgba(112, 0, 255, 0.3);
+  }
+  .will-change-transform {
+    will-change: transform;
   }
 }
