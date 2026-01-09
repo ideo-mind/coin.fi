@@ -5,8 +5,8 @@ const chains = ['Ethereum', 'Polygon', 'Arbitrum', 'Optimism', 'Base', 'Avalanch
 export function Features() {
   return (
     <div className="py-24 space-y-32 bg-[#050505]">
-      {/* Chain Ticker */}
-      <section className="relative overflow-hidden py-12 border-y border-zinc-900 bg-zinc-950/40">
+      {/* Chain Ticker - Full Width */}
+      <section className="w-full relative overflow-hidden py-12 border-y border-zinc-900 bg-zinc-950/40">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-20 items-center px-10">
@@ -21,15 +21,15 @@ export function Features() {
             </div>
           ))}
         </div>
-        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#050505] to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#050505] to-transparent z-10" />
+        <div className="absolute inset-y-0 left-0 w-20 md:w-40 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+        <div className="absolute inset-y-0 right-0 w-20 md:w-40 bg-gradient-to-l from-[#050505] to-transparent z-10" />
       </section>
-      {/* Problem/Solution */}
+      {/* Problem/Solution - Guttered */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             className="p-8 md:p-12 rounded-4xl bg-zinc-900/10 border border-zinc-900/50 space-y-8 backdrop-blur-sm"
           >
@@ -37,7 +37,7 @@ export function Features() {
               <div className="p-2 rounded-xl bg-red-500/10">
                 <XCircle className="w-8 h-8 text-red-500/70" />
               </div>
-              <h3 className="text-2xl font-black">Legacy Wallets</h3>
+              <h3 className="text-2xl font-black text-white">Legacy Wallets</h3>
             </div>
             <ul className="space-y-6 text-zinc-500 font-medium text-lg">
               <li className="flex items-start gap-3">• Requires gas tokens before first transaction</li>
@@ -45,9 +45,9 @@ export function Features() {
               <li className="flex items-start gap-3">• Complex "Approve" transactions waste time</li>
             </ul>
           </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             className="p-8 md:p-12 rounded-4xl bg-gradient-brand/5 border border-primary/20 space-y-8 shadow-glow-lg relative overflow-hidden"
           >
@@ -56,29 +56,29 @@ export function Features() {
               <div className="p-2 rounded-xl bg-primary/10">
                 <CheckCircle2 className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-black">Coin Fi</h3>
+              <h3 className="text-2xl font-black text-white">Coin Fi</h3>
             </div>
             <ul className="space-y-6 text-white font-bold text-lg relative z-10">
               <li className="flex gap-4 items-center">
-                <Zap className="w-6 h-6 text-primary shrink-0 animate-pulseGlow" /> 
+                <Zap className="w-6 h-6 text-primary shrink-0 animate-pulseGlow" />
                 Zero gas required to start
               </li>
               <li className="flex gap-4 items-center">
-                <Zap className="w-6 h-6 text-primary shrink-0" /> 
+                <Zap className="w-6 h-6 text-primary shrink-0" />
                 Social recovery & Biometrics
               </li>
               <li className="flex gap-4 items-center">
-                <Zap className="w-6 h-6 text-primary shrink-0" /> 
+                <Zap className="w-6 h-6 text-primary shrink-0" />
                 Atomic execution batches
               </li>
             </ul>
           </motion.div>
         </div>
       </section>
-      {/* Benefits Grid */}
+      {/* Benefits Grid - Guttered */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-black">Engineered for <span className="text-gradient">Performance</span></h2>
+          <h2 className="text-4xl md:text-5xl font-black text-white">Engineered for <span className="text-gradient">Performance</span></h2>
           <p className="text-zinc-500 font-medium">No compromises on speed, security, or decentralization.</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -88,15 +88,15 @@ export function Features() {
             { icon: RefreshCcw, title: 'Smart Account', desc: 'Native ERC-4337 features like session keys and custom logic.' },
             { icon: Smartphone, title: 'Cross-Device', desc: 'Synced passkeys via secure cloud-encrypted backup channels.' }
           ].map((b, i) => (
-            <motion.div 
-              key={i} 
-              whileHover={{ y: -10 }} 
+            <motion.div
+              key={i}
+              whileHover={{ y: -10 }}
               className="p-10 rounded-4xl bg-zinc-900/20 border border-zinc-800/60 hover:border-primary/40 transition-all duration-300 group"
             >
               <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
                 <b.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
               </div>
-              <h4 className="text-xl font-bold mb-3">{b.title}</h4>
+              <h4 className="text-xl font-bold text-white mb-3">{b.title}</h4>
               <p className="text-sm text-zinc-500 font-medium leading-relaxed">{b.desc}</p>
             </motion.div>
           ))}

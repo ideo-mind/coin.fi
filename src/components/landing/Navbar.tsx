@@ -27,7 +27,7 @@ export function Navbar() {
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-primary p-1 rounded-lg shadow-glow overflow-hidden shrink-0">
+          <div className="bg-[#f38020] p-1 rounded-lg shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0">
             <img
               src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
               alt="Coin Fi"
@@ -39,9 +39,9 @@ export function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
+            <a
+              key={link.name}
+              href={link.href}
               className="text-sm font-bold text-zinc-400 hover:text-primary transition-colors"
             >
               {link.name}
@@ -62,17 +62,17 @@ export function Navbar() {
             <SheetContent side="right" className="w-[300px] bg-zinc-950 border-zinc-800">
               <div className="flex flex-col gap-8 mt-12">
                 {navLinks.map((link) => (
-                  <a 
-                    key={link.name} 
-                    href={link.href} 
+                  <a
+                    key={link.name}
+                    href={link.href}
                     onClick={handleMobileLinkClick}
                     className="text-2xl font-black text-white hover:text-primary transition-colors"
                   >
                     {link.name}
                   </a>
                 ))}
-                <Button 
-                  className="w-full h-14 text-lg font-black rounded-2xl mt-4 shadow-glow" 
+                <Button
+                  className="w-full h-14 text-lg font-black rounded-2xl mt-4 shadow-glow"
                   onClick={handleMobileLinkClick}
                   asChild
                 >

@@ -25,7 +25,7 @@ export function Hero() {
   const fetchCount = async (signal?: AbortSignal) => {
     setIsCountLoading(true);
     try {
-      const res = await fetch(API_URL, { 
+      const res = await fetch(API_URL, {
         signal,
         mode: 'cors',
         credentials: 'omit'
@@ -36,7 +36,6 @@ export function Hero() {
         try {
           json = JSON.parse(text);
         } catch (e) {
-          // If response isn't pure JSON, we don't treat it as a critical failure
           return;
         }
         const pioneerCount = json?.count ?? json?.data?.count ?? json?.data?.total ?? json?.total ?? 0;
@@ -45,9 +44,7 @@ export function Hero() {
         }
       }
     } catch (err) {
-      // Suppress logs for abort errors or common network hiccups to keep console clean
       if (err instanceof Error && err.name !== 'AbortError') {
-        // Fallback to 0 if we can't fetch, but don't show an error toast to users
         setCount(0);
       }
     } finally {
@@ -69,7 +66,6 @@ export function Hero() {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('platforms', JSON.stringify(platforms));
-      // Use no-cors for POST to handle Google Apps Script redirection behavior
       await fetch(API_URL, {
         method: 'POST',
         body: formData,
@@ -77,7 +73,6 @@ export function Hero() {
       });
       toast.success("Welcome pioneer! You're on the list.");
       setEmail('');
-      // Re-fetch count after a small delay to allow for backend processing
       setTimeout(() => fetchCount(), 2500);
     } catch (err) {
       console.error('[WAITLIST SUBMIT ERROR]', err);
@@ -119,9 +114,9 @@ export function Hero() {
                   className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
                   disabled={loading}
                 />
-                <Button 
-                  type="submit" 
-                  disabled={loading} 
+                <Button
+                  type="submit"
+                  disabled={loading}
                   className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95"
                 >
                   {loading ? "..." : "Access"}
@@ -181,7 +176,7 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-glow shadow-primary/10 overflow-hidden">
+                <div className="h-14 w-14 rounded-2xl bg-[#f38020]/20 flex items-center justify-center shadow-glow shadow-[#f38020]/10 overflow-hidden">
                   <img
                     src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
                     alt="Coin Fi App"
@@ -204,9 +199,9 @@ export function Hero() {
                   </div>
                 </div>
               </div>
-              <motion.div 
-                animate={{ y: [-10, 10, -10] }} 
-                transition={{ duration: 4, repeat: Infinity }} 
+              <motion.div
+                animate={{ y: [-10, 10, -10] }}
+                transition={{ duration: 4, repeat: Infinity }}
                 className="absolute -right-6 top-1/4 bg-zinc-900/90 p-4 rounded-2xl border border-white/10 shadow-glow"
               >
                 <ShieldCheck className="w-6 h-6 text-primary" />

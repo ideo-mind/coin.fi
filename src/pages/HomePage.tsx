@@ -10,7 +10,7 @@ import { MobileCTA } from '@/components/landing/MobileCTA';
 import { Toaster } from '@/components/ui/sonner';
 export function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground">
+    <div className="min-h-screen bg-[#050505] text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground">
       {/* Background Mesh/Gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full opacity-50" />
@@ -19,20 +19,15 @@ export function HomePage() {
       <Navbar />
       <main className="relative">
         <div className="space-y-16 md:space-y-24 lg:space-y-32 pb-16 md:pb-24 lg:pb-32">
-          {/* Hero uses internal padding for specific alignment */}
+          {/* Hero section handles its own max-width and internal spacing */}
           <Hero />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Features />
-          </div>
-          <div className="w-full">
-            <TechExplainer />
-          </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SecurityScan />
-          </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <PricingAndFAQ />
-          </div>
+          {/* Component manages its own spacing and nested containers */}
+          <Features />
+          {/* TechExplainer spans full width with internal gutters */}
+          <TechExplainer />
+          {/* SecurityScan and PricingAndFAQ follow standard gutter patterns internally */}
+          <SecurityScan />
+          <PricingAndFAQ />
         </div>
       </main>
       <Footer />
