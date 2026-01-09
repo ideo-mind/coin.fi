@@ -1,8 +1,3 @@
-export interface DemoItem {
-  id: string;
-  name: string;
-  value: number;
-}
 export interface WaitlistEntry {
   email: string;
   platforms: string[];
