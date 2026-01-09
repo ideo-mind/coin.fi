@@ -67,20 +67,51 @@ export function Hero() {
         email: email,
         platforms: platforms.join(', ') || ''
       };
+      console.log('[WAITLIST POST]', {url: API_URL, payload});
       const response = await fetch(API_URL, {
         method: 'POST',
         mode: 'cors',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8', // Using text/plain to avoid CORS preflight issues with some GAS setups
+          'Content-Type': 'text/plain',
         },
         body: JSON.stringify(payload)
       });
-      toast.success("Welcome pioneer! You're on the list.");
-      setEmail('');
-      setTimeout(() => fetchCount(), 2500);
+      
+      const responseText = await response.text();
+      console.log('[WAITLIST POST RESPONSE]', {
+        status: response.status,
+        statusText: response.statusText,
+        textPreview: responseText.slice(0, 200)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      let success = false;
+      try {
+        const json = JSON.parse(responseText);
+        success = json?.success || json?.ok;
+      } catch {
+        success = responseText.toLowerCase().includes('success') || responseText.toLowerCase().includes('ok');
+      }
+      
+      if (success) {
+        toast.success("Welcome pioneer! You're on the list.");
+        setEmail('');
+        setTimeout(() => fetchCount(), 2500);
+      } else {
+        throw new Error(responseText.slice(0, 100) || 'Unknown error');
+      }
     } catch (err) {
-      console.error('[WAITLIST SUBMIT ERROR]', err);
-      toast.error("Waitlist currently busy. Please try again in a moment.");
+      const errorMsg = err instanceof Error 
+        ? `${err.name}: ${err.message}` 
+        : String(err);
+      console.error('[WAITLIST SUBMIT ERROR]', { 
+        errorMsg, 
+        stack: err instanceof Error ? err.stack : undefined 
+      });
+      toast.error(`Failed to submit: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
