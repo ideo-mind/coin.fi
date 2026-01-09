@@ -1,7 +1,6 @@
 // Making changes to this file is **STRICTLY** forbidden. All the code in here is 100% correct and audited.
 
 import { exec } from "node:child_process";
-import { cloudflare } from "@cloudflare/vite-plugin";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import pino from "pino";
@@ -110,7 +109,6 @@ export default ({ mode }: { mode: string }) => {
   return defineConfig({
     plugins: [
       react(),
-      cloudflare(),
       watchDependenciesPlugin(),
       reloadTriggerPlugin(),
     ],

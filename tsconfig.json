@@ -28,8 +28,7 @@
       "@shared/*": ["./shared/*"]
     },
 
-    "incremental": true,
-    "types": ["@cloudflare/workers-types"]
+    "incremental": true
   },
   "include": ["src", "shared", "vite.config.ts"]
 }
