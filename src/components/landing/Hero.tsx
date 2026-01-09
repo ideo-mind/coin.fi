@@ -63,20 +63,45 @@ export function Hero() {
     if (platforms.length === 0) return toast.error("Please select at least one platform.");
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('platforms', JSON.stringify(platforms));
-      await fetch(API_URL, {
+      // Transition from FormData to JSON payload
+      // Platforms are sent as a comma-separated string per requirements
+      const payload = {
+        email: email,
+        platforms: platforms.join(', ') || ''
+      };
+      const response = await fetch(API_URL, {
         method: 'POST',
-        body: formData,
-        mode: 'no-cors'
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
-      toast.success("Welcome pioneer! You're on the list.");
-      setEmail('');
-      setTimeout(() => fetchCount(), 2500);
+      // Handle structured JSON response from backend
+      if (response.ok || response.type === 'opaque') {
+        // Since Google Apps Script often redirects or returns 200 with opaque status in some configurations,
+        // we check for standard success if cors allowed parsing.
+        try {
+          const result = await response.json();
+          if (result && result.success === false) {
+            throw new Error(result.message || "Submission failed");
+          }
+        } catch (parseError) {
+          // If response isn't JSON but status was OK (like opaque or simple text), we treat as success
+          console.debug("Non-JSON or Opaque response received, assuming success based on status.");
+        }
+        toast.success("Welcome pioneer! You're on the list.");
+        setEmail('');
+        // Refresh the count to reflect new sign-up
+        setTimeout(() => fetchCount(), 2500);
+      } else {
+        throw new Error("Server returned an error");
+      }
     } catch (err) {
       console.error('[WAITLIST SUBMIT ERROR]', err);
-      toast.error("Could not connect to the waitlist service. Please try again later.");
+      const errorMessage = err instanceof Error ? err.message : "Could not connect to the waitlist service.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
