@@ -12,7 +12,8 @@ const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 const FALLBACK_COUNT = 12540;
 export function Hero() {
   const [email, setEmail] = useState('');
-  const [platforms, setPlatforms] = useState<string[]>(PLATFORMS);
+  // Initialize with empty array for Phase 24 requirement
+  const [platforms, setPlatforms] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [isCountLoading, setIsCountLoading] = useState(true);
@@ -24,6 +25,20 @@ export function Hero() {
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
+  // Intelligent OS Detection for Platform Pre-selection
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+    if (isIOS) {
+      setPlatforms(['iOS']);
+    } else if (isAndroid) {
+      setPlatforms(['Android']);
+    } else {
+      // For desktop or others, we keep it empty by default as per requirements
+      setPlatforms([]);
+    }
+  }, []);
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
     if (countRef.current === null) {
       setIsCountLoading(true);
@@ -90,9 +105,7 @@ export function Hero() {
           timestamp: new Date().toISOString()
         })
       });
-      
       const text = await response.text();
-      
       if (!response.ok) {
         console.error('[Hero] Waitlist server error:', {
           status: response.status,
@@ -101,8 +114,6 @@ export function Hero() {
         });
         throw new Error("Submission failed");
       }
-      
-      // Attempt JSON parse for GAS/server errors even on 200
       try {
         const parsed = JSON.parse(text);
         if (parsed && parsed.error) {
@@ -110,9 +121,8 @@ export function Hero() {
           throw new Error(parsed.error);
         }
       } catch {
-        // Unknown response format, assume success (preserve current behavior)
+        // Assume success if text isn't JSON
       }
-      
       toast.success("Welcome aboard! Check your email for next steps.", { id: toastId });
       setEmail('');
       setTimeout(() => fetchCount(), 2000);
