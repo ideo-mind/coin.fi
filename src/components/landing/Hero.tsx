@@ -106,33 +106,8 @@ export function Hero() {
         body: JSON.stringify(payload)
       });
       const text = await response.text();
-      const logData = {
-        url: API_URL,
-        method: 'POST',
-        status: response.status,
-        statusText: response.statusText,
-        payload,
-        bodyPreview: text.slice(0, 200)
-      };
       if (!response.ok) {
-        console.error('[Hero] Waitlist HTTP error:', logData);
         toast.error(`Server error (${response.status}). Please try again.`, { id: toastId });
-        return;
-      }
-      let parsed: any;
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        /* Handle non-JSON response from Google Apps Script gracefully */
-      }
-      if (parsed?.error) {
-        console.error('[Hero] Waitlist GAS error:', { ...logData, parsedError: parsed.error });
-        toast.error(
-          typeof parsed.error === 'string' && parsed.error
-            ? parsed.error
-            : 'Server rejected submission. Please try again.',
-          { id: toastId }
-        );
         return;
       }
       toast.success("Welcome aboard! You're officially on the list.", { id: toastId });
@@ -140,16 +115,6 @@ export function Hero() {
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('[Hero] Waitlist network error:', {
-          url: API_URL,
-          method: 'POST',
-          timestamp: new Date().toISOString(),
-          error: {
-            name: err.name,
-            message: err.message,
-            stack: err.stack
-          }
-        });
         toast.error('Connectivity issue. We\'ve noted your request—please try again later.', {
           id: toastId,
           icon: <AlertCircle className="w-5 h-5 text-destructive" />
@@ -170,7 +135,7 @@ export function Hero() {
             className="space-y-10"
           >
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest shadow-glow self-start">
-              <Zap className="w-3.5 h-3.5 fill-primary animate-pulse shrink-0" />
+              <Zap className="w-3.5 h-3.5 fill-primary animate-pulseGlow shrink-0" />
               <span>Unlimited Gas Sponsorship</span>
             </div>
             <div className="space-y-4">
@@ -200,7 +165,7 @@ export function Hero() {
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
                 </Button>
               </div>
-              <div className="p-4 sm:p-5 rounded-3xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm">
+              <div className="p-4 sm:p-5 rounded-3xl bg-zinc-900/40 border border-zinc-800 backdrop-blur-md">
                 <div className="grid grid-cols-2 gap-y-4 gap-x-4">
                   {PLATFORMS.map((p) => (
                     <div key={p} className="flex items-center space-x-3 group">
@@ -214,7 +179,7 @@ export function Hero() {
                       />
                       <Label
                         htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
-                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer flex-1 py-1 truncate"
+                        className="text-sm font-medium text-muted-foreground group-hover:text-foreground cursor-pointer flex-1 py-1 truncate transition-colors"
                       >
                         {p}
                       </Label>
@@ -249,7 +214,9 @@ export function Hero() {
                       ))}
                     </div>
                     <span className="text-sm text-muted-foreground font-medium">
-                      <strong className="text-foreground font-black">{(count ?? FALLBACK_COUNT).toLocaleString()}</strong> pioneers joined
+                      <strong className="text-foreground font-black min-w-[50px] inline-block">
+                        {(count ?? FALLBACK_COUNT).toLocaleString()}
+                      </strong> pioneers joined
                     </span>
                   </motion.div>
                 )}
@@ -266,7 +233,7 @@ export function Hero() {
               whileHover={{ rotateY: -10, rotateX: 5 }}
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
-              <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
+              <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-900 h-full">
                 <div className="flex justify-center">
                   <div className="h-16 w-16 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/40 ring-1 ring-white/20">
                     <img
@@ -276,24 +243,30 @@ export function Hero() {
                     />
                   </div>
                 </div>
-                <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">
+                <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5 shadow-glass">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-muted-foreground uppercase">Gas Cost</span>
-                    <div className="px-3 py-1 rounded-full text-primary text-xs font-black shadow-glow animate-pulse">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Gas Cost</span>
+                    <div className="px-3 py-1 rounded-full text-primary text-sm font-black shadow-glow-xl animate-pulseGlow bg-primary/10">
                       $0.00
                     </div>
                   </div>
                   <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
                     <motion.div
                       animate={{ width: ["0%", "100%", "0%"] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      className="h-full bg-gradient-brand"
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      className="h-full bg-gradient-brand shadow-glow"
                     />
                   </div>
                 </div>
+                <div className="space-y-4 opacity-40">
+                  <div className="h-4 w-3/4 bg-zinc-800 rounded-full" />
+                  <div className="h-4 w-1/2 bg-zinc-800 rounded-full" />
+                  <div className="h-24 w-full bg-zinc-900/50 rounded-2xl border border-white/5" />
+                </div>
               </div>
             </motion.div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full -z-10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[600px] bg-secondary/5 blur-[80px] rounded-full -z-10" />
           </motion.div>
         </div>
       </div>
