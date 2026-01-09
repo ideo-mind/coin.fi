@@ -53,7 +53,6 @@ export function Hero() {
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('[COINFI_WAITLIST] Count Sync Failed:', err.message);
         if (!count) setCount(FALLBACK_COUNT);
       }
     } finally {
@@ -65,7 +64,7 @@ export function Hero() {
     const controller = new AbortController();
     fetchCount(controller.signal);
     return () => controller.abort();
-  }, [fetchCount]);
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email.");
@@ -75,7 +74,7 @@ export function Hero() {
       const response = await fetch(API_URL, {
         method: 'POST',
         mode: 'cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           email: email.trim(),
           platforms: platforms.join(', '),
