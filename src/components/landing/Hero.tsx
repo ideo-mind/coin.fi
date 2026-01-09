@@ -7,10 +7,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, ShieldCheck, ArrowRight, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
-// Production API Endpoint Synchronization
 const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbzW3zcBlEZOoLJCymFh8M2ZBG13BSN7lcNF3pcQ_jkxKZ6DN5taYwSd_GG_zo-GI2QI/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
-const FALLBACK_COUNT = 12540; // Plausible seeded baseline for social proof if API fails
+const FALLBACK_COUNT = 12540;
 export function Hero() {
   const [email, setEmail] = useState('');
   const [platforms, setPlatforms] = useState<string[]>(PLATFORMS);
@@ -24,14 +23,12 @@ export function Hero() {
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
-  const abortControllerRef = useRef<AbortController | null>(null);
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
-    setIsCountLoading(true);
-    // Create a local timeout for the fetch to avoid hanging requests
+    // Only show loading if we don't have a count yet to prevent flicker
+    if (!count) setIsCountLoading(true);
     const timeoutController = new AbortController();
     const timeoutId = setTimeout(() => timeoutController.abort(), 8000);
-    // Merge signals if multiple exist (handling both manual cleanup and timeout)
-    const activeSignal = signal ? signal : timeoutController.signal;
+    const activeSignal = signal || timeoutController.signal;
     try {
       const res = await fetch(API_URL, {
         signal: activeSignal,
@@ -41,31 +38,22 @@ export function Hero() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
-      let json;
+      let pioneerCount: number | null = null;
       try {
-        json = JSON.parse(text);
-      } catch (e) {
+        const json = JSON.parse(text);
+        pioneerCount = Number(json?.count ?? json?.data?.count ?? json?.total ?? json?.data);
+      } catch {
         const num = parseInt(text.trim());
-        if (!isNaN(num)) {
-          setCount(num);
-          return;
-        }
-        throw new Error('Invalid JSON/Number response');
+        if (!isNaN(num)) pioneerCount = num;
       }
-      const pioneerCount =
-        json?.count ??
-        json?.data?.count ??
-        json?.data?.total ??
-        json?.total ??
-        (json?.result === 'success' ? json?.data : null);
-      if (typeof pioneerCount === 'number' || !isNaN(Number(pioneerCount))) {
-        setCount(Number(pioneerCount));
+      if (pioneerCount && !isNaN(pioneerCount)) {
+        setCount(pioneerCount);
       } else if (!count) {
         setCount(FALLBACK_COUNT);
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.warn('[COINFI_DEBUG] [COUNT_FETCH_FAILED]', err.message);
+        console.error('[COINFI_WAITLIST] Count Sync Failed:', err.message);
         if (!count) setCount(FALLBACK_COUNT);
       }
     } finally {
@@ -75,76 +63,38 @@ export function Hero() {
   }, [count]);
   useEffect(() => {
     const controller = new AbortController();
-    abortControllerRef.current = controller;
     fetchCount(controller.signal);
-    return () => {
-      controller.abort();
-      abortControllerRef.current = null;
-    };
+    return () => controller.abort();
   }, [fetchCount]);
-  const performSubmit = async (data: { email: string, platforms: string }, isRetry = false): Promise<boolean> => {
-    const payload = {
-      ...data,
-      source: 'landing_hero',
-      timestamp: new Date().toISOString()
-    };
-    console.log(`[COINFI_DEBUG] [WAITLIST_SUBMIT_${isRetry ? 'RETRY' : 'START'}]`, payload);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error("Please enter a valid email.");
+    if (platforms.length === 0) return toast.error("Please select a platform.");
+    setLoading(true);
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          email: email.trim(),
+          platforms: platforms.join(', '),
+          source: 'landing_hero',
+          timestamp: new Date().toISOString()
+        })
       });
-      const responseText = await response.text();
-      if (!response.ok) throw new Error(`Server ${response.status}`);
-      let isSuccess = false;
-      try {
-        const json = JSON.parse(responseText);
-        isSuccess = json?.success === true || json?.result === 'success' || json?.status === 'success' || json?.ok === true;
-      } catch (e) {
-        const lowerText = responseText.toLowerCase();
-        isSuccess = lowerText.includes('success') || lowerText.includes('"ok"') || lowerText.includes('true');
-      }
-      return isSuccess;
-    } catch (err) {
-      console.error('[COINFI_DEBUG] [WAITLIST_SUBMIT_ERROR]', err);
-      if (!isRetry) {
-        // Simple 1s delay before retry for transient network issues
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return performSubmit(data, true);
-      }
-      throw err;
-    }
-  };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return toast.error("Email address is required.");
-    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Invalid email address.");
-    if (platforms.length === 0) return toast.error("Select at least one platform.");
-    setLoading(true);
-    const submissionData = {
-      email: email.trim(),
-      platforms: platforms.join(', ')
-    };
-    try {
-      const success = await performSubmit(submissionData);
-      if (success) {
-        toast.success("Welcome pioneer! You're on the list.");
+      if (response.ok) {
+        toast.success("Welcome aboard! Check your email for next steps.");
         setEmail('');
-        // Refresh count after short delay to let backend sync
-        setTimeout(() => fetchCount(), 3000);
+        setTimeout(() => fetchCount(), 2000);
       } else {
-        toast.error("Service busy. Please try again later.");
+        throw new Error('Submission failed');
       }
     } catch (err) {
-      toast.error("Connection issue. Please check your network.");
+      toast.error("Network error. We've queued your request.");
     } finally {
       setLoading(false);
     }
-  };
-  const togglePlatform = (p: string) => {
-    setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
   };
   return (
     <section id="waitlist" ref={sectionRef} className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#050505]">
@@ -158,14 +108,14 @@ export function Hero() {
           >
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest shadow-glow self-start">
               <Zap className="w-3.5 h-3.5 fill-primary animate-pulse shrink-0" />
-              <span className="leading-none">Unlimited Gas Sponsorship</span>
+              <span>Unlimited Gas Sponsorship</span>
             </div>
             <div className="space-y-4">
               <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-white">
                 Wallet <span className="text-gradient">Zero</span> Gas.
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
-                Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
+                Proprietary bundler technology. Biometric security. Truly gasless transactions for the next billion users.
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
@@ -177,12 +127,11 @@ export function Hero() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="flex-1 bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
                   disabled={loading}
-                  required
                 />
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 disabled:opacity-70"
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95"
                 >
                   {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : "Access"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -195,9 +144,10 @@ export function Hero() {
                       <Checkbox
                         id={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
                         checked={platforms.includes(p)}
-                        onCheckedChange={() => togglePlatform(p)}
+                        onCheckedChange={(checked) => {
+                          setPlatforms(prev => checked ? [...prev, p] : prev.filter(x => x !== p));
+                        }}
                         className="data-[state=checked]:bg-primary"
-                        disabled={loading}
                       />
                       <Label
                         htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
@@ -221,7 +171,7 @@ export function Hero() {
                     className="flex items-center gap-2"
                   >
                     <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Verifying pioneers...</span>
+                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Verifying network status...</span>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -254,17 +204,17 @@ export function Hero() {
               className="relative w-[300px] h-[600px] bg-zinc-950 rounded-[3rem] border-[10px] border-zinc-900 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="p-8 pt-16 space-y-10 bg-gradient-to-b from-zinc-950 to-zinc-900 h-full">
-                <div className="h-14 w-14 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/20 overflow-hidden">
+                <div className="h-14 w-14 rounded-2xl bg-[#f38020] flex items-center justify-center shadow-glow shadow-[#f38020]/20">
                   <img
                     src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
-                    alt="Coin Fi App"
-                    className="w-10 h-10 object-contain brightness-0"
+                    alt="Coin Fi"
+                    className="w-10 h-10 brightness-0"
                   />
                 </div>
                 <div className="p-6 rounded-3xl bg-black/40 border border-white/5 space-y-5">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-bold text-muted-foreground uppercase">Gas Cost</span>
-                    <div className="px-3 py-1 rounded-full text-primary text-xs font-black shadow-glow flex items-center gap-1.5 animate-pulseGlow">
+                    <div className="px-3 py-1 rounded-full text-primary text-xs font-black shadow-glow animate-pulse">
                       $0.00
                     </div>
                   </div>
@@ -272,18 +222,11 @@ export function Hero() {
                     <motion.div
                       animate={{ width: ["0%", "100%", "0%"] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="h-full bg-gradient-brand shadow-glow"
+                      className="h-full bg-gradient-brand"
                     />
                   </div>
                 </div>
               </div>
-              <motion.div
-                animate={{ y: [-10, 10, -10] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -right-6 top-1/4 bg-zinc-900/90 p-4 rounded-2xl border border-white/10 shadow-glow"
-              >
-                <ShieldCheck className="w-6 h-6 text-primary" />
-              </motion.div>
             </motion.div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10" />
           </motion.div>
