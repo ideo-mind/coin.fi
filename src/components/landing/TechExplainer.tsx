@@ -30,10 +30,10 @@ export function TechExplainer() {
         </div>
         <Tabs defaultValue="bundler" onValueChange={setActiveStep} className="space-y-16">
           <div className="flex justify-center">
-            <TabsList className="bg-zinc-900/50 border border-zinc-800 p-1.5 h-auto rounded-2xl">
-              <TabsTrigger value="bundler" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold">Bundler</TabsTrigger>
-              <TabsTrigger value="7702" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold">ERC-7702</TabsTrigger>
-              <TabsTrigger value="passkeys" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold">Passkeys</TabsTrigger>
+            <TabsList className="bg-zinc-900/50 border border-zinc-800 p-1.5 h-auto rounded-2xl ring-1 ring-white/5">
+              <TabsTrigger value="bundler" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">Bundler</TabsTrigger>
+              <TabsTrigger value="7702" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">ERC-7702</TabsTrigger>
+              <TabsTrigger value="passkeys" className="px-8 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold transition-all">Passkeys</TabsTrigger>
             </TabsList>
           </div>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -44,14 +44,14 @@ export function TechExplainer() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
                   className="space-y-8"
                 >
                   <h3 className="text-4xl font-black tracking-tight">{techData[activeStep as keyof typeof techData].title}</h3>
                   <p className="text-zinc-400 text-xl leading-relaxed font-medium">{techData[activeStep as keyof typeof techData].desc}</p>
                   <ul className="space-y-4">
                     {techData[activeStep as keyof typeof techData].points.map((p, i) => (
-                      <li key={i} className="flex items-center gap-3 text-primary font-bold group">
+                      <li key={i} className="flex items-center gap-3 text-primary font-bold group cursor-default">
                         <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" /> {p}
                       </li>
                     ))}
@@ -59,16 +59,16 @@ export function TechExplainer() {
                 </motion.div>
               </AnimatePresence>
             </div>
-            <div className="relative aspect-video bg-zinc-950 rounded-[2.5rem] border border-zinc-800/50 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg">
-              <svg 
-                viewBox="0 0 400 200" 
+            <div className="relative aspect-video bg-zinc-950 rounded-[2.5rem] border border-zinc-800/50 flex items-center justify-center p-8 overflow-hidden shadow-glow-lg ring-1 ring-white/5">
+              <svg
+                viewBox="0 0 400 200"
                 className="w-full h-auto will-change-transform"
-                aria-label="Interactive infrastructure diagram showing transaction bundling and verification"
+                aria-label="Interactive infrastructure diagram"
                 role="img"
               >
                 <defs>
-                  <filter id="svgGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                  <filter id="svgGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                 </defs>
@@ -81,32 +81,29 @@ export function TechExplainer() {
                   x="180" y="80" width="40" height="40" rx="10"
                   fill="#050505" stroke="#00f2ff" strokeWidth="2"
                   filter="url(#svgGlow)"
-                  animate={{ rotate: 360 }}
+                  animate={{ rotate: 360, scale: [1, 1.05, 1] }}
                   transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
                 />
                 <circle cx="360" cy="100" r="18" fill="#050505" stroke="#00f2ff" strokeWidth="3" filter="url(#svgGlow)" />
                 {[0, 1, 2].map((i) => (
                   <React.Fragment key={i}>
-                    {/* Top Path Packets */}
-                    <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="4s" repeatCount="indefinite" begin={`${i * 1.3}s`}>
+                    <circle r="3.5" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`}>
                         <mpath href="#pathTop" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4s" repeatCount="indefinite" begin={`${i * 1.3}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="3.5s" repeatCount="indefinite" begin={`${i * 1.2}s`} />
                     </circle>
-                    {/* Bottom Path Packets */}
-                    <circle r="4" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="4.5s" repeatCount="indefinite" begin={`${i * 1.5}s`}>
+                    <circle r="3.5" fill="#00f2ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="4s" repeatCount="indefinite" begin={`${i * 1.4}s`}>
                         <mpath href="#pathBottom" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4.5s" repeatCount="indefinite" begin={`${i * 1.5}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="4s" repeatCount="indefinite" begin={`${i * 1.4}s`} />
                     </circle>
-                    {/* Exit Path Packets */}
-                    <circle r="5" fill="#7000ff" filter="url(#svgGlow)" opacity="0">
-                      <animateMotion dur="2.5s" repeatCount="indefinite" begin={`${i * 0.8}s`}>
+                    <circle r="4.5" fill="#7000ff" filter="url(#svgGlow)" opacity="0">
+                      <animateMotion dur="2.2s" repeatCount="indefinite" begin={`${i * 0.7}s`}>
                         <mpath href="#pathExit" />
                       </animateMotion>
-                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" repeatCount="indefinite" begin={`${i * 0.8}s`} />
+                      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.2s" repeatCount="indefinite" begin={`${i * 0.7}s`} />
                     </circle>
                   </React.Fragment>
                 ))}

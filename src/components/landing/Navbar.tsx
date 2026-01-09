@@ -24,19 +24,19 @@ export function Navbar() {
     <nav className={cn(
       "fixed top-0 w-full z-50 transition-all duration-300 border-b will-change-transform",
       scrolled
-        ? "bg-black/60 backdrop-blur-xl border-zinc-800/40 py-3 shadow-glass"
+        ? "bg-black/80 backdrop-blur-2xl border-zinc-800/60 py-3 shadow-glass"
         : "bg-transparent border-transparent py-5"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div 
-          className="flex items-center gap-3 group cursor-pointer" 
+        <div
+          className="flex items-center gap-3 group cursor-pointer"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0 ring-1 ring-white/10 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[#f38020]/40">
+          <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0 ring-1 ring-white/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[#f38020]/40">
             <img
               src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
               alt="Coin Fi"
-              className="w-7 h-7 object-contain brightness-0"
+              className="w-7 h-7 object-contain"
             />
           </div>
           <span className="text-xl font-black tracking-tight text-white group-hover:text-primary transition-colors">Coin Fi</span>
@@ -61,18 +61,18 @@ export function Navbar() {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-zinc-900 rounded-xl">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-zinc-900 rounded-xl transition-colors">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] bg-zinc-950 border-zinc-800 p-8 flex flex-col">
+            <SheetContent side="right" className="w-[300px] bg-zinc-950 border-zinc-800 p-8 flex flex-col shadow-2xl">
               <div className="flex flex-col gap-6 mt-12">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20">
                     <img
                       src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
                       alt="Coin Fi"
-                      className="w-6 h-6 brightness-0"
+                      className="w-6 h-6"
                     />
                   </div>
                   <span className="text-xl font-black text-white">Coin Fi</span>
@@ -82,10 +82,10 @@ export function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={handleMobileLinkClick}
-                    className="text-2xl font-black text-zinc-100 hover:text-primary transition-colors border-b border-zinc-900/50 pb-4 flex items-center justify-between group"
+                    className="text-2xl font-black text-zinc-100 hover:text-primary transition-all border-b border-zinc-900/50 pb-4 flex items-center justify-between group"
                   >
                     {link.name}
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
                   </a>
                 ))}
                 <Button

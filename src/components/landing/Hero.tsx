@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Zap, ArrowRight, RefreshCcw, AlertCircle } from 'lucide-react';
+import { Zap, ArrowRight, RefreshCcw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 const API_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwMAvL5Eyhbfs9aoyUhKi2RZvNXvkYXTxXtxDQ7LlpbrL5XuD3jv1j92lXHFRx6G5Dk/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
@@ -24,18 +24,17 @@ export function Hero() {
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
-  useEffect(() => {
+  const detectPlatform = useCallback(() => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
     const isAndroid = /android/.test(userAgent);
-    if (isIOS) {
-      setPlatforms(['iOS']);
-    } else if (isAndroid) {
-      setPlatforms(['Android']);
-    } else {
-      setPlatforms([]);
-    }
+    if (isIOS) return ['iOS'];
+    if (isAndroid) return ['Android'];
+    return [];
   }, []);
+  useEffect(() => {
+    setPlatforms(detectPlatform());
+  }, [detectPlatform]);
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
     if (countRef.current === null) {
       setIsCountLoading(true);
@@ -107,40 +106,30 @@ export function Hero() {
       });
       const text = await response.text();
       if (!response.ok) {
-        const errorSnippet = text.slice(0, 100);
-        toast.error(`Server Error ${response.status}: ${errorSnippet || 'Unknown response'}`, { id: toastId });
+        toast.error(`Server Error ${response.status}: Failed to submit.`, { id: toastId });
         setLoading(false);
         return;
       }
-      // If response is OK, try to parse JSON
       let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        // Fallback for non-JSON success text responses
-        data = { success: true };
-      }
+      try { data = JSON.parse(text); } catch { data = { success: true }; }
       if (data.error || data.success === false) {
-        toast.error(data.error || data.message || "The server rejected this request.", { id: toastId });
+        toast.error(data.error || data.message || "Request rejected by server.", { id: toastId });
         setLoading(false);
         return;
       }
-      // Absolute Success Flow
-      toast.success("Welcome aboard! You're officially on the list.", { id: toastId });
+      toast.success("Welcome aboard! You're officially on the list.", { 
+        id: toastId,
+        icon: <CheckCircle2 className="w-5 h-5 text-primary animate-in zoom-in-50 duration-300" />
+      });
       setEmail('');
-      setPlatforms([]);
+      setPlatforms(detectPlatform());
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
-      // Catch only network/connectivity issues or unexpected script crashes
-      if (err instanceof Error) {
-        if (err.name === 'AbortError') {
-          // Request was cancelled, do nothing or minimal feedback
-        } else {
-          toast.error("Connectivity issue. Please check your internet or try again later.", {
-            id: toastId,
-            icon: <AlertCircle className="w-5 h-5 text-destructive" />
-          });
-        }
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast.error("Connectivity issue. Please check your internet connection.", {
+          id: toastId,
+          icon: <AlertCircle className="w-5 h-5 text-destructive" />
+        });
       }
     } finally {
       setLoading(false);
@@ -181,7 +170,7 @@ export function Hero() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95 shrink-0 whitespace-nowrap"
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 shrink-0 whitespace-nowrap"
                 >
                   {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : "Early Access"}
                   {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -198,6 +187,7 @@ export function Hero() {
                           setPlatforms(prev => checked ? [...prev, p] : prev.filter(x => x !== p));
                         }}
                         className="data-[state=checked]:bg-primary shrink-0"
+                        disabled={loading}
                       />
                       <Label
                         htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
@@ -218,7 +208,7 @@ export function Hero() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-3 w-64"
+                    className="flex items-center gap-3"
                   >
                     <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin shrink-0" />
                     <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest whitespace-nowrap">Verifying network...</span>
@@ -228,17 +218,18 @@ export function Hero() {
                     key="count"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-3 w-full max-w-xs"
+                    className="flex items-center gap-3"
                   >
                     <div className="flex -space-x-2 shrink-0">
                       {[1, 2, 3].map(i => (
                         <div key={i} className="w-7 h-7 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow ring-1 ring-white/10" />
                       ))}
                     </div>
-                    <span className="text-sm text-muted-foreground font-medium">
-                      <strong className="text-foreground font-black min-w-[50px] inline-block">
+                    <span className="text-sm text-muted-foreground font-medium flex items-center gap-1.5">
+                      <strong className="text-foreground font-black">
                         {(count ?? FALLBACK_COUNT).toLocaleString()}
-                      </strong> pioneers joined
+                      </strong> 
+                      pioneers joined
                     </span>
                   </motion.div>
                 )}
@@ -288,7 +279,6 @@ export function Hero() {
               </div>
             </motion.div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full -z-10" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[600px] bg-secondary/5 blur-[80px] rounded-full -z-10" />
           </motion.div>
         </div>
       </div>
