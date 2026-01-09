@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
@@ -24,15 +24,17 @@ export function Hero() {
   const { ref: buttonRef, inView: buttonInView } = useInView({
     threshold: 0,
   });
+  const abortControllerRef = useRef<AbortController | null>(null);
   const fetchCount = useCallback(async (signal?: AbortSignal) => {
     setIsCountLoading(true);
-    // Create a local timeout for the fetch to avoid hanging requests in browser
-    const timeoutId = setTimeout(() => {
-      if (signal instanceof AbortController) (signal as any).abort();
-    }, 8000);
+    // Create a local timeout for the fetch to avoid hanging requests
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), 8000);
+    // Merge signals if multiple exist (handling both manual cleanup and timeout)
+    const activeSignal = signal ? signal : timeoutController.signal;
     try {
       const res = await fetch(API_URL, {
-        signal,
+        signal: activeSignal,
         mode: 'cors',
         credentials: 'omit',
         cache: 'no-store'
@@ -58,14 +60,12 @@ export function Hero() {
         (json?.result === 'success' ? json?.data : null);
       if (typeof pioneerCount === 'number' || !isNaN(Number(pioneerCount))) {
         setCount(Number(pioneerCount));
-      } else {
-        // If API returns success but no count, use fallback
-        if (!count) setCount(FALLBACK_COUNT);
+      } else if (!count) {
+        setCount(FALLBACK_COUNT);
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
         console.warn('[COINFI_DEBUG] [COUNT_FETCH_FAILED]', err.message);
-        // Resilient fallback: show a high baseline number so UI doesn't look empty
         if (!count) setCount(FALLBACK_COUNT);
       }
     } finally {
@@ -75,18 +75,16 @@ export function Hero() {
   }, [count]);
   useEffect(() => {
     const controller = new AbortController();
+    abortControllerRef.current = controller;
     fetchCount(controller.signal);
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      abortControllerRef.current = null;
+    };
   }, [fetchCount]);
-  const handleSubmit = async (e: React.FormEvent, isRetry = false) => {
-    e.preventDefault();
-    if (!email) return toast.error("Email address is required.");
-    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Invalid email address.");
-    if (platforms.length === 0) return toast.error("Select at least one platform.");
-    setLoading(true);
+  const performSubmit = async (data: { email: string, platforms: string }, isRetry = false): Promise<boolean> => {
     const payload = {
-      email: email.trim(),
-      platforms: platforms.join(', '),
+      ...data,
       source: 'landing_hero',
       timestamp: new Date().toISOString()
     };
@@ -99,9 +97,7 @@ export function Hero() {
         body: JSON.stringify(payload)
       });
       const responseText = await response.text();
-      if (!response.ok) {
-        throw new Error(`Server ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server ${response.status}`);
       let isSuccess = false;
       try {
         const json = JSON.parse(responseText);
@@ -110,24 +106,39 @@ export function Hero() {
         const lowerText = responseText.toLowerCase();
         isSuccess = lowerText.includes('success') || lowerText.includes('"ok"') || lowerText.includes('true');
       }
-      if (isSuccess) {
+      return isSuccess;
+    } catch (err) {
+      console.error('[COINFI_DEBUG] [WAITLIST_SUBMIT_ERROR]', err);
+      if (!isRetry) {
+        // Simple 1s delay before retry for transient network issues
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return performSubmit(data, true);
+      }
+      throw err;
+    }
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return toast.error("Email address is required.");
+    if (!/\S+@\S+\.\S+/.test(email)) return toast.error("Invalid email address.");
+    if (platforms.length === 0) return toast.error("Select at least one platform.");
+    setLoading(true);
+    const submissionData = {
+      email: email.trim(),
+      platforms: platforms.join(', ')
+    };
+    try {
+      const success = await performSubmit(submissionData);
+      if (success) {
         toast.success("Welcome pioneer! You're on the list.");
         setEmail('');
+        // Refresh count after short delay to let backend sync
         setTimeout(() => fetchCount(), 3000);
       } else {
-        // If not successful and not yet retried, try one more time for transient network issues
-        if (!isRetry) {
-          console.warn('[COINFI_DEBUG] [SUBMIT_SOFT_FAILURE] Retrying...');
-          return handleSubmit(e, true);
-        }
-        throw new Error("Service busy. Please try again.");
+        toast.error("Service busy. Please try again later.");
       }
     } catch (err) {
-      console.error('[COINFI_DEBUG] [WAITLIST_SUBMIT_FATAL]', err);
-      if (!isRetry) {
-        return handleSubmit(e, true);
-      }
-      toast.error(`Connection issue. Please check your network.`);
+      toast.error("Connection issue. Please check your network.");
     } finally {
       setLoading(false);
     }
@@ -157,7 +168,7 @@ export function Hero() {
                 Next-gen non-custodial wallet powered by ERC-7702. Truly zero gas, biometric security, and atomic execution.
               </p>
             </div>
-            <form onSubmit={(e) => handleSubmit(e)} className="space-y-6 max-w-md">
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
               <div className="flex flex-col sm:flex-row gap-3" ref={buttonRef}>
                 <Input
                   type="email"
