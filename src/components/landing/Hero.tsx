@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-const API_URL = 'https://script.google.com/macros/s/AKfycbwS_5mifi9GBOYPV3Rkm60sFC4RnlgfeB4PU-StdYI/dev';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxxQ7TN7qwyvKey9IIpTFEtrAW-Tfw6IwnViwUK5Qmh70oj8Gg0ajdx_eevACl3gt31/exec';
 const PLATFORMS = ['iOS', 'Android', 'Chrome Extension', 'Web App'];
 export function Hero() {
   const [email, setEmail] = useState('');
@@ -23,16 +23,20 @@ export function Hero() {
     threshold: 0,
   });
   const fetchCount = async (signal?: AbortSignal) => {
+    setIsCountLoading(true);
     try {
-      const res = await fetch(API_URL, { signal });
+      const res = await fetch(API_URL, { 
+        signal,
+        mode: 'cors',
+        credentials: 'omit'
+      });
       if (res.ok) {
         const text = await res.text();
         let json;
         try {
           json = JSON.parse(text);
         } catch (e) {
-          // Fallback if the response isn't pure JSON (common with Google Apps Script redirects)
-          console.warn('API returned non-JSON response');
+          // If response isn't pure JSON, we don't treat it as a critical failure
           return;
         }
         const pioneerCount = json?.count ?? json?.data?.count ?? json?.data?.total ?? json?.total ?? 0;
@@ -41,8 +45,10 @@ export function Hero() {
         }
       }
     } catch (err) {
+      // Suppress logs for abort errors or common network hiccups to keep console clean
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.warn('Waitlist fetch failed:', err.message);
+        // Fallback to 0 if we can't fetch, but don't show an error toast to users
+        setCount(0);
       }
     } finally {
       setIsCountLoading(false);
@@ -63,6 +69,7 @@ export function Hero() {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('platforms', JSON.stringify(platforms));
+      // Use no-cors for POST to handle Google Apps Script redirection behavior
       await fetch(API_URL, {
         method: 'POST',
         body: formData,
@@ -70,9 +77,10 @@ export function Hero() {
       });
       toast.success("Welcome pioneer! You're on the list.");
       setEmail('');
-      setTimeout(() => fetchCount(), 2000);
+      // Re-fetch count after a small delay to allow for backend processing
+      setTimeout(() => fetchCount(), 2500);
     } catch (err) {
-      console.error(err);
+      console.error('[WAITLIST SUBMIT ERROR]', err);
       toast.error("Could not connect to the waitlist service. Please try again later.");
     } finally {
       setLoading(false);
@@ -109,8 +117,13 @@ export function Hero() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
+                  disabled={loading}
                 />
-                <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95">
+                <Button 
+                  type="submit" 
+                  disabled={loading} 
+                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-95"
+                >
                   {loading ? "..." : "Access"}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
@@ -124,6 +137,7 @@ export function Hero() {
                         checked={platforms.includes(p)}
                         onCheckedChange={() => togglePlatform(p)}
                         className="data-[state=checked]:bg-primary"
+                        disabled={loading}
                       />
                       <Label
                         htmlFor={`p-${p.replace(/\s+/g, '-').toLowerCase()}`}
@@ -136,18 +150,25 @@ export function Hero() {
                 </div>
               </div>
             </form>
-            {!isCountLoading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow" />
-                  ))}
+            <div className="flex items-center gap-3 min-h-[24px]">
+              {isCountLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Waitlist count loading...</span>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">{(count ?? 0).toLocaleString()}</strong> pioneers joined
-                </span>
-              </motion.div>
-            )}
+              ) : (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-950 bg-gradient-brand shadow-glow" />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">{(count ?? 0).toLocaleString()}</strong> pioneers joined
+                  </span>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -183,7 +204,11 @@ export function Hero() {
                   </div>
                 </div>
               </div>
-              <motion.div animate={{ y: [-10, 10, -10] }} transition={{ duration: 4, repeat: Infinity }} className="absolute -right-6 top-1/4 bg-zinc-900/90 p-4 rounded-2xl border border-white/10 shadow-glow">
+              <motion.div 
+                animate={{ y: [-10, 10, -10] }} 
+                transition={{ duration: 4, repeat: Infinity }} 
+                className="absolute -right-6 top-1/4 bg-zinc-900/90 p-4 rounded-2xl border border-white/10 shadow-glow"
+              >
                 <ShieldCheck className="w-6 h-6 text-primary" />
               </motion.div>
             </motion.div>
