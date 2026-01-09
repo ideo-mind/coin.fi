@@ -95,16 +95,15 @@ export function Hero() {
     setLoading(true);
     const toastId = toast.loading("Reserving your spot in the future of DeFi...");
     try {
+      const payload = {
+        email: email.trim(),
+        platforms: platforms.join(', ') || ''
+      };
       const response = await fetch(API_URL, {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          email: email.trim(),
-          platforms: platforms.join(', '),
-          source: 'landing_hero',
-          timestamp: new Date().toISOString()
-        })
+        body: JSON.stringify(payload)
       });
       const text = await response.text();
       const logData = {
@@ -112,7 +111,7 @@ export function Hero() {
         method: 'POST',
         status: response.status,
         statusText: response.statusText,
-        headersPreview: Object.fromEntries([...Array.from(response.headers.entries()).slice(0, 10)]),
+        payload,
         bodyPreview: text.slice(0, 200)
       };
       if (!response.ok) {
@@ -123,12 +122,14 @@ export function Hero() {
       let parsed: any;
       try {
         parsed = JSON.parse(text);
-      } catch {/* Non-JSON 200 responses treated as success (GAS tolerant) */}
+      } catch {
+        /* Handle non-JSON response from Google Apps Script gracefully */
+      }
       if (parsed?.error) {
         console.error('[Hero] Waitlist GAS error:', { ...logData, parsedError: parsed.error });
         toast.error(
-          typeof parsed.error === 'string' && parsed.error 
-            ? parsed.error 
+          typeof parsed.error === 'string' && parsed.error
+            ? parsed.error
             : 'Server rejected submission. Please try again.',
           { id: toastId }
         );
@@ -139,15 +140,15 @@ export function Hero() {
       setTimeout(() => fetchCount(), 2000);
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('[Hero] Waitlist network error:', { 
-          url: API_URL, 
-          method: 'POST', 
-          timestamp: new Date().toISOString(), 
-          error: { 
-            name: err.name, 
-            message: err.message, 
-            stack: err.stack 
-          } 
+        console.error('[Hero] Waitlist network error:', {
+          url: API_URL,
+          method: 'POST',
+          timestamp: new Date().toISOString(),
+          error: {
+            name: err.name,
+            message: err.message,
+            stack: err.stack
+          }
         });
         toast.error('Connectivity issue. We\'ve noted your request—please try again later.', {
           id: toastId,
