@@ -7,14 +7,11 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
-              <div className="bg-[#f38020] p-1 rounded-lg shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0">
-                <img
-                  src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
-                  alt="Coin Fi"
-                  className="w-6 h-6 object-contain brightness-110"
-                />
-              </div>
-              <span className="text-xl font-bold tracking-tight">Coin Fi</span>
+              <img
+                src="/logo-full.png"
+                alt="CoinFi"
+                className="h-8 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+              />
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed">
               Making web3 accessible to everyone through gasless transactions

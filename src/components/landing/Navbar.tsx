@@ -35,16 +35,11 @@ export function Navbar() {
           className="flex items-center gap-3 group cursor-pointer bg-transparent border-none p-0"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
-          <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20 overflow-hidden shrink-0 ring-1 ring-white/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[#f38020]/40">
-            <img
-              src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
-              alt="Coin Fi"
-              className="w-7 h-7 object-contain"
-            />
-          </div>
-          <span className="text-xl font-black tracking-tight text-white group-hover:text-primary transition-colors">
-            Coin Fi
-          </span>
+          <img
+            src="/logo-full.png"
+            alt="CoinFi"
+            className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          />
         </button>
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
@@ -84,14 +79,11 @@ export function Navbar() {
             >
               <div className="flex flex-col gap-6 mt-12">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-[#f38020] p-1.5 rounded-xl shadow-glow shadow-[#f38020]/20">
-                    <img
-                      src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/icon/btc.png"
-                      alt="Coin Fi"
-                      className="w-6 h-6"
-                    />
-                  </div>
-                  <span className="text-xl font-black text-white">Coin Fi</span>
+                  <img
+                    src="/logo-full.png"
+                    alt="CoinFi"
+                    className="h-8 w-auto object-contain"
+                  />
                 </div>
                 {navLinks.map((link) => (
                   <a
