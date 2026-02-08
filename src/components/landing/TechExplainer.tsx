@@ -34,6 +34,7 @@ export function TechExplainer() {
     },
   };
   return (
+    // biome-ignore lint/correctness/useUniqueElementIds: landing page section
     <section id="tech" className="py-24 bg-[#050505] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-4">
@@ -112,6 +113,7 @@ export function TechExplainer() {
                 role="img"
               >
                 <defs>
+                  {/* biome-ignore lint/correctness/useUniqueElementIds: SVG filter */}
                   <filter
                     id="svgGlow"
                     x="-50%"
@@ -127,6 +129,7 @@ export function TechExplainer() {
                     />
                   </filter>
                 </defs>
+                {/* biome-ignore lint/correctness/useUniqueElementIds: SVG path */}
                 <path
                   id="pathTop"
                   d="M 40 60 Q 150 60 200 100"
@@ -135,6 +138,7 @@ export function TechExplainer() {
                   fill="none"
                   strokeDasharray="4 4"
                 />
+                {/* biome-ignore lint/correctness/useUniqueElementIds: SVG path */}
                 <path
                   id="pathBottom"
                   d="M 40 140 Q 150 140 200 100"
@@ -143,6 +147,7 @@ export function TechExplainer() {
                   fill="none"
                   strokeDasharray="4 4"
                 />
+                {/* biome-ignore lint/correctness/useUniqueElementIds: SVG path */}
                 <path
                   id="pathExit"
                   d="M 200 100 H 360"

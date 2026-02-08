@@ -3,6 +3,7 @@ import { AlertTriangle, Eye, ShieldCheck } from "lucide-react";
 
 export function SecurityScan() {
   return (
+    // biome-ignore lint/correctness/useUniqueElementIds: landing page section
     <section id="security" className="py-24 bg-[#050505]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-20 items-center">

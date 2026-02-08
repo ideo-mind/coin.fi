@@ -1,4 +1,4 @@
-import React, { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 import { errorReporter } from "@/lib/errorReporter";
 import { ErrorFallback } from "./ErrorFallback";
 
@@ -18,50 +18,39 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-    error: null,
-    errorInfo: null,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
 
-  public static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error, errorInfo: null };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Update state with error info
-    this.setState({ errorInfo });
-
-    // Report error to backend
-    errorReporter.report({
-      message: error.message,
-      stack: error.stack || "",
-      componentStack: errorInfo.componentStack,
-      errorBoundary: true,
-      errorBoundaryProps: {
-        componentName: this.constructor.name,
-      },
-      url: window.location.href,
-      timestamp: new Date().toISOString(),
-      level: "error",
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    errorReporter.report(error, {
+      componentStack: errorInfo.componentStack || undefined,
     });
+    this.setState({ error, errorInfo });
   }
 
-  private retry = () => {
+  retry = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
     // Reload the page to ensure clean state
     window.location.reload();
   };
 
-  private goHome = () => {
+  goHome = () => {
     window.location.href = "/";
   };
 
-  public render() {
+  render() {
     if (this.state.hasError && this.state.error) {
       if (this.props.fallback) {
         return this.props.fallback(
+          // biome-ignore lint/style/noNonNullAssertion: state is set when hasError is true
           this.state.error,
+          // biome-ignore lint/style/noNonNullAssertion: state is set when hasError is true
           this.state.errorInfo!,
           this.retry,
         );

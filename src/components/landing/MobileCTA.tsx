@@ -57,6 +57,20 @@ export function MobileCTA() {
             </div>
             <Button
               size="lg"
+              variant="ghost"
+              className="rounded-2xl px-4 h-12 font-bold text-zinc-300 hover:text-white hover:bg-white/10 transition-all z-10"
+              asChild
+            >
+              <a
+                href="https://app.coinfi.ideomind.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open App
+              </a>
+            </Button>
+            <Button
+              size="lg"
               className="rounded-2xl px-6 h-12 font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 z-10"
               asChild
             >

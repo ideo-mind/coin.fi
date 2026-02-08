@@ -150,6 +150,10 @@ export function Hero() {
       setEmail("");
       setPlatforms(detectPlatform());
       setTimeout(() => fetchCount(), 2000);
+      // Redirect to Web App
+      setTimeout(() => {
+        window.location.href = "https://app.coinfi.ideomind.org";
+      }, 1500);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
         toast.error(
@@ -165,6 +169,7 @@ export function Hero() {
     }
   };
   return (
+    // biome-ignore lint/correctness/useUniqueElementIds: landing page section
     <section
       id="waitlist"
       ref={sectionRef}
@@ -192,26 +197,42 @@ export function Hero() {
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
-              <div className="flex flex-col sm:flex-row gap-3" ref={buttonRef}>
-                <Input
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
-                  disabled={loading}
-                />
+              <div className="flex flex-col gap-3" ref={buttonRef}>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-zinc-900 border-zinc-800 h-14 rounded-2xl focus-visible:ring-primary text-lg"
+                    disabled={loading}
+                  />
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 shrink-0 whitespace-nowrap"
+                  >
+                    {loading ? (
+                      <RefreshCcw className="w-5 h-5 animate-spin" />
+                    ) : (
+                      "Early Access"
+                    )}
+                    {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                  </Button>
+                </div>
                 <Button
-                  type="submit"
-                  disabled={loading}
-                  className="h-14 px-8 rounded-2xl text-lg font-bold shadow-glow bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 shrink-0 whitespace-nowrap"
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 rounded-2xl text-base font-bold border-zinc-800 bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all active:scale-95"
+                  asChild
                 >
-                  {loading ? (
-                    <RefreshCcw className="w-5 h-5 animate-spin" />
-                  ) : (
-                    "Early Access"
-                  )}
-                  {!loading && <ArrowRight className="w-5 h-5 ml-2" />}
+                  <a
+                    href="https://app.coinfi.ideomind.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Already have access? Open Web App
+                  </a>
                 </Button>
               </div>
               <div className="p-4 sm:p-5 rounded-3xl bg-zinc-900/40 border border-zinc-800 backdrop-blur-md">
@@ -335,6 +356,7 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
+      {/* biome-ignore lint/correctness/useUniqueElementIds: interaction trigger */}
       <div
         className="hidden"
         data-cta-visible={buttonInView}

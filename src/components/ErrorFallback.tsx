@@ -1,11 +1,11 @@
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export interface ErrorFallbackProps {
   title?: string;
   message?: string;
+  // biome-ignore lint/suspicious/noExplicitAny: generic error handling
   error?: Error | any;
   onRetry?: () => void;
   onGoHome?: () => void;

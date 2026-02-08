@@ -131,7 +131,7 @@ const Carousel = React.forwardRef<
           canScrollNext,
         }}
       >
-        // biome-ignore lint/a11y/useSemanticElements: Carousel semantics
+        {/* biome-ignore lint/a11y/useSemanticElements: Carousel semantics */}
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
@@ -177,6 +177,7 @@ const CarouselItem = React.forwardRef<
   const { orientation } = useCarousel();
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: slide group semantics
     <div
       ref={ref}
       role="group"

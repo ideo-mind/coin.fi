@@ -1,3 +1,4 @@
+/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +33,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     background: #050505;
   }
   /* Custom Scrollbar */
@@ -70,7 +71,9 @@
     background: linear-gradient(135deg, #00f2ff 0%, #7000ff 100%);
   }
   .shadow-glow-xl {
-    box-shadow: 0 0 60px -15px rgba(0, 242, 255, 0.4), 0 0 30px -10px rgba(112, 0, 255, 0.3);
+    box-shadow:
+      0 0 60px -15px rgba(0, 242, 255, 0.4),
+      0 0 30px -10px rgba(112, 0, 255, 0.3);
   }
   .will-change-transform {
     will-change: transform;

@@ -61,6 +61,8 @@ const InputOTPSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<"div">
 >(({ ...props }, ref) => (
   // biome-ignore lint/a11y/useFocusableInteractive: Separator needs semantic role but is not interactive
+  // biome-ignore lint/a11y/useAriaPropsForRole: separator validation
+  // biome-ignore lint/a11y/useSemanticElements: separator validation
   <div ref={ref} role="separator" {...props}>
     <Minus />
   </div>

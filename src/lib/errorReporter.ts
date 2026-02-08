@@ -428,11 +428,13 @@ class ErrorReporter {
 
     console.error = this.createConsoleInterceptor(
       "error",
+      // biome-ignore lint/style/noNonNullAssertion: interceptor requires original console
       this.originalConsoleError!,
       CONSOLE_ERROR_PREFIX,
     );
     console.warn = this.createConsoleInterceptor(
       "warn",
+      // biome-ignore lint/style/noNonNullAssertion: interceptor requires original console
       this.originalConsoleWarn!,
       WARNING_PREFIX,
     );
@@ -566,7 +568,7 @@ class ErrorReporter {
 
       // Process queue
       this.processQueue();
-    } catch (err) {
+    } catch (_err) {
       // Swallow reporting errors in client
     }
   }

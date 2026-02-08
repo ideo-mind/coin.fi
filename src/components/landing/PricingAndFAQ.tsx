@@ -60,6 +60,7 @@ const faqs = [
 export function PricingAndFAQ() {
   return (
     <div className="py-24 space-y-32 bg-[#050505]">
+      {/* biome-ignore lint/correctness/useUniqueElementIds: landing page section */}
       <section
         id="pricing"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16"
@@ -138,6 +139,7 @@ export function PricingAndFAQ() {
           ))}
         </div>
       </section>
+      {/* biome-ignore lint/correctness/useUniqueElementIds: landing page section */}
       <section
         id="faq"
         className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"

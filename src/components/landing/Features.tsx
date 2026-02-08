@@ -7,7 +7,6 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
-import React from "react";
 
 const chains = [
   "Ethereum",

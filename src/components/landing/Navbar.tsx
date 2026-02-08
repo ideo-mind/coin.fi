@@ -55,6 +55,20 @@ export function Navbar() {
           ))}
           <Button
             size="sm"
+            variant="ghost"
+            className="font-bold rounded-xl px-4 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all"
+            asChild
+          >
+            <a
+              href="https://app.coinfi.ideomind.org"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open Web App
+            </a>
+          </Button>
+          <Button
+            size="sm"
             className="font-bold rounded-xl px-6 shadow-glow transition-all active:scale-95 hover:scale-105"
             asChild
           >
